@@ -1,0 +1,29 @@
+import { Component, OnInit } from '@angular/core';
+import { MyFirstServiceService } from './../services/my-first-service.service';
+
+@Component({
+  selector: 'app-login',
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.css']
+})
+export class LoginComponent implements OnInit {
+  public blackJackData = JSON.parse(localStorage.getItem('blackJackData')) || {};
+  // public nameIsKnown: string = this.blackJackData.userName;
+  public userName: string = this.blackJackData.userName;
+
+  public constructor(private _myService: MyFirstServiceService) {}
+
+  public saveUserName(name: string): void {
+    console.log(name);
+    const userId: number = new Date().getUTCMilliseconds();
+    this.blackJackData.userName = name;
+    if (!this.blackJackData.userId) {
+      this.blackJackData.userId = userId;
+    }
+    this.userName = name;
+    const stringblackJackData: string = JSON.stringify(this.blackJackData);
+    localStorage.setItem('blackJackData', stringblackJackData);
+  }
+
+  ngOnInit() {}
+}

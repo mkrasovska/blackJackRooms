@@ -1,0 +1,23 @@
+<section class="game-field">
+  <div class="decision-buttons">
+    <button class="next-card" *ngIf="gameInProgress" (click)="cardTaken.emit()">
+      Pick a card
+    </button>
+
+    <button class="stop-game" *ngIf="gameInProgress" (click)="gameStopped.emit()">
+      Stop
+    </button>
+  </div>
+
+ <div *ngFor="let player of players">
+  <div class="cards">
+    <img *ngFor="let card of player.cards"
+         [src]="!gameInProgress ? card.face : player.isBot == false ? card.face : card.back" />
+  </div>
+
+
+  <!-- <div class="cards">
+      <img *ngFor="let card of players[0].cards" [src]="card.face" />
+  </div> -->
+</div>
+</section>

@@ -1,0 +1,24 @@
+<button type="submit" (click)=addRoom(setRoomName.value)>
+  Add room
+</button>
+<input #setRoomName placeholder="enter room name">
+
+<p>Select existing room</p>
+<div class="existing-rooms">
+
+<div class="room"
+  *ngFor="let room of rooms">
+  {{room.id}}
+  {{room.name}}
+  Counter: {{room.counter}}
+
+  <a class="menu-button" [routerLink]="['/playroom', room.id]"> Enter room {{room.id}}</a>
+  <!-- <button (click)="goToRoom(room.id)">
+    Enter room
+  </button> -->
+  <button (click)="deleteRoom(room.id)">
+    Delete
+  </button>
+</div>
+
+</div>

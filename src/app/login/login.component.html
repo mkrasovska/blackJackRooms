@@ -1,0 +1,12 @@
+<p *ngIf="userName">
+  Hi {{userName}}!
+  <a class="menu-button" routerLink="/menu">To menu</a>
+</p>
+
+<div *ngIf="!userName">
+  <p>Hi, unknown user!</p>
+<input placeholder="Please introduce yourself" #nameInput>
+<button type="submit" (click)=saveUserName(nameInput.value)>
+  Remember me
+</button>
+</div>
