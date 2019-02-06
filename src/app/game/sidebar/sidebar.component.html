@@ -5,7 +5,7 @@
   <a class="go-to-menu" routerLink="/menu">To main menu</a>
 
   <div class="game-log">
-    <h2>Game Log </h2>
+    <!-- <h2>Game Log </h2> -->
 
     <p *ngFor="let message of allMessages">
       {{ message }}
@@ -21,7 +21,7 @@
 
   </div>
 
-  <div *ngIf="gameInProgress" class="game-players">
+  <div *ngIf="!gameInProgress" class="game-players">
 
     <h2>Players</h2>
 

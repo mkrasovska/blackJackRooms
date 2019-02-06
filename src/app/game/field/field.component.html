@@ -3,14 +3,14 @@
     <button class="next-card"
      *ngIf="gameInProgress"
      (click)="cardTaken.emit()"
-     [disabled]="!isActive">
+     [disabled]="!isActive || !isMyTurn">
       Pick a card
     </button>
 
     <button class="stop-game"
      *ngIf="gameInProgress"
      (click)="gameStopped.emit()"
-     [disabled]="!isActive">
+     [disabled]="!isActive || !isMyTurn ">
       Stop
     </button>
   </div>

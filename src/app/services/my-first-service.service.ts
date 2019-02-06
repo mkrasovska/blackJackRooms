@@ -6,9 +6,11 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class MyFirstServiceService {
+  public randomUserNumber: number = this.getRandom();
+
   public blackJackData: TLocalData = this.getMyData() || {
-    userName: `Kot${this.getRandom()}`,
-    userId: this.getRandom()
+    userName: `Kot${this.randomUserNumber}`,
+    userId: this.randomUserNumber
   };
   public roomId: number = 0;
   public myBotsId: number[] = [
@@ -34,10 +36,17 @@ export class MyFirstServiceService {
   public removePlayer(playerId: number, roomId: number): void {
     this.db.object('/rooms/room' + roomId + `/players/${playerId}`).remove();
   }
+  public changeInProgress(gameInProgress: boolean, roomId: number): void {
+    this.db.object('/rooms/room' + roomId + `/gameInProgress`).set(gameInProgress);
+  }
 
   public updatePlayer(player: TPlayer, roomId: number): void {
     this.db.object('/rooms/room' + roomId + `/players/${player.id}`).update(player);
   }
+
+  // public updatePlayers(players: TPlayer[], roomId: number): void {
+  //   this.db.object('/rooms/room' + roomId + `/players`).update(players);
+  // }
 
   // public sayReady(playerId: number, roomId: number): void {
   //   let isReady = {[playerId] : true};

@@ -26,7 +26,7 @@ type TRoom = {
   players: TPlayer[],
   deck: TCard[],
   messages: string[]
-  // ready: {}
+  gameInProgress: boolean
 }
 
 type TLocalData = {

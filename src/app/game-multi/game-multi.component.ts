@@ -28,7 +28,8 @@ export class GameMultiComponent implements OnInit {
       counter: 0,
       masterId,
       deck: this._myService.createDeck(),
-      players: {}
+      players: {},
+      gameInProgress: false
     });
     this.db.object('/rooms/room' + roomId + `/players/${masterId}`).update({
       id: masterId,

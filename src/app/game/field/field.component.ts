@@ -19,26 +19,29 @@ export class FieldComponent implements OnInit, OnDestroy {
   public blackJackData: TLocalData = this._myService.blackJackData;
   private _destroy$$ = new Subject();
   public isActive: boolean = false;
+  public isMyTurn: boolean = false;
+  public playersObj: {} = {};
 
   constructor(private _myService: MyFirstServiceService) {}
 
   ngOnInit() {
     this.subRoom = this._myService
-    .getThisRoomData(this._myService.roomId)
-    .pipe(takeUntil(this._destroy$$))
-    .subscribe((room: TRoom) => {
-     if (room.players) {
-     this.players = Object.values(room.players);
-     this.isActive = this.players.every((player: TPlayer) => player.ready);
-     console.log(this.isActive);
-     }
-    });
+      .getThisRoomData(this._myService.roomId)
+      .pipe(takeUntil(this._destroy$$))
+      .subscribe((room: TRoom) => {
+        if (room.players) {
+          this.players = Object.values(room.players);
+          this.playersObj = room.players;
+          console.log(this.playersObj);
+          this.isActive = this.players.every((player: TPlayer) => player.ready);
+          this.isMyTurn = this.playersObj[this._myService.blackJackData.userId].isMyTurn;
+          console.log(this.isActive);
+        }
+      });
   }
 
-   ngOnDestroy() {
-   this._destroy$$.next();
-   }
-
-
+  ngOnDestroy() {
+    this._destroy$$.next();
+  }
 }
 

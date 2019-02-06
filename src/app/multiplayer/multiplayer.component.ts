@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MyFirstServiceService } from './../services/my-first-service.service';
 import { Subscription } from 'rxjs';
+import { getPlayers } from '@angular/core/src/render3/players';
 
 @Component({
   selector: 'app-multiplayer',
@@ -9,11 +10,13 @@ import { Subscription } from 'rxjs';
 })
 export class MultiplayerComponent implements OnInit, OnDestroy {
   public players: TPlayer[] = this.createPlayers(1, 1);
+  public playersObj: {} = {};
   public gameInProgress: boolean = false;
   public allMessages: string[] = [];
   public messageText: string;
   public subRoom: Subscription;
-  public isReady: {} = {};
+  // public playOrder: string[] = [];
+  public myIndex: number;
 
   private _newDeck: TCard[] = this._myService.createDeck();
   private _myDeck: TCard[] = this._myService.shuffleDeck(this._newDeck);
@@ -36,9 +39,16 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
         // console.log(this._myDeck);
         if (room.players) {
           this.players = Object.values(room.players);
-          // const isActive: boolean = this.players.every((player: TPlayer) => player.ready);
-          // console.log(isActive);
+          this.playersObj = room.players;
         }
+        // this.playOrder = Object.keys(room.players);
+        this.gameInProgress =
+          this.players.every((player: TPlayer) => player.ready) &&
+          !this.players.every((player: TPlayer) => player.isFinished);
+        console.log(this.gameInProgress);
+        this._myService.changeInProgress(this.gameInProgress, this._myService.roomId);
+        this.myIndex = this.players.findIndex((player: TPlayer) => player.id === this._myService.blackJackData.userId);
+        console.log(this.myIndex);
       });
   }
 
@@ -77,7 +87,7 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
   }
 
   public blackJackInit(): void {
-    this.gameInProgress = true;
+    // this.gameInProgress = true;
     this.startNewGame();
   }
 
@@ -86,7 +96,7 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
     // this._refillDeck();
     // this._myDeck = this._myService.shuffleDeck(this._myDeck);
     this._myDeck = this._myService.shuffleDeck(this._newDeck);
-    console.log(this._myDeck);
+    // console.log(this._myDeck);
     this._clearBoard();
     this.players.forEach((player: TPlayer) => {
       player.cards = [];
@@ -99,8 +109,8 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
       }
 
     });
-    console.log(this.players);
-    console.log(this._myService.blackJackData.userId);
+    // console.log(this.players);
+    // console.log(this._myService.blackJackData.userId);
     // this.players.forEach((player: TPlayer) => this._takeNewCard(player));
 
     // this.players.forEach((player: TPlayer) => {
@@ -120,15 +130,15 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
     });
     this._myService.updateDeck(this._myDeck, this._myService.roomId);
     this._myService.removeMessages(this._myService.roomId);
-    console.log(this.players);
+    // console.log(this.players);
     // this._myService.sayReady(this._myService.blackJackData.userId, this._myService.roomId);
     // console.log(this._myDeck);
 
   }
 
   public stopGame(): void {
-    this.players[0].isFinished = true;
-    this._writeMessage(`${this.players[0].name} stopped the game`);
+    this.players[this.myIndex].isFinished = true;
+    this._writeMessage(`${this._myService.blackJackData.userName} stopped the game`);
     this.nextRound();
   }
 
@@ -144,12 +154,23 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
     });
 
     if (this.players.every((player: TPlayer) => player.isFinished)) {
+      console.log('evebody finished');
       if (!this.players.some((player: TPlayer) => player.isWinner)) {
         const winner: TPlayer = this._myService.evaluateWinner(this.players);
         this._writeMessage(`${winner.name} has won`);
       }
       this._showNewGameButton();
     }
+    // const myNumber: number = this.playOrder.indexOf(
+    //   String(this._myService.blackJackData.userId)
+    // );
+
+    this.players[this.myIndex].isMyTurn = false;
+    const nextIndex: number = this.myIndex < this.players.length - 1 ? this.myIndex + 1 : 0;
+    this.players[nextIndex].isMyTurn = true;
+    this._myService.updateDeck(this._myDeck, this._myService.roomId);
+    this._myService.updatePlayer(this.players[this.myIndex], this._myService.roomId);
+    this._myService.updatePlayer(this.players[nextIndex], this._myService.roomId);
   }
 
   public nextTurn(player: TPlayer): void {
@@ -176,14 +197,19 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
       }
     }
 
-    this._myService.updateDeck(this._myDeck, this._myService.roomId);
-    this._myService.updatePlayer(player, this._myService.roomId);
-
+    // const myNumber: number = this.playOrder.indexOf(String(this._myService.blackJackData.userId));
+    // const nextIndex: number = (myNumber < this.players.length - 1) ? myNumber + 1 : 0;
+    // this.players[myNumber].isMyTurn = !this.players[myNumber].isMyTurn;
+    // this.players[nextIndex].isMyTurn = !this.players[nextIndex].isMyTurn;
+    // this._myService.updateDeck(this._myDeck, this._myService.roomId);
+    // this._myService.updatePlayer(this.players[myNumber], this._myService.roomId);
+    // this._myService.updatePlayer(this.players[nextIndex], this._myService.roomId);
   }
 
   private _clearBoard(): void {
-    this.gameInProgress = true;
+    // this.gameInProgress = true;
     this.allMessages = [];
+    this._myService.updateMessages(this.allMessages, this._myService.roomId);
   }
 
   private _takeNewCard(player: TPlayer): TCard {
@@ -195,7 +221,9 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
   }
 
   private _showNewGameButton(): void {
-    this.gameInProgress = false;
+    // this.gameInProgress = false;
+    this._myService.changeInProgress(false, this._myService.roomId);
+    console.log('evebody finiched');
   }
 
   private _refillDeck(): void {
