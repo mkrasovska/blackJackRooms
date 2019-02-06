@@ -1,10 +1,16 @@
 <section class="game-field">
   <div class="decision-buttons">
-    <button class="next-card" *ngIf="gameInProgress" (click)="cardTaken.emit()">
+    <button class="next-card"
+     *ngIf="gameInProgress"
+     (click)="cardTaken.emit()"
+     [disabled]="!isActive">
       Pick a card
     </button>
 
-    <button class="stop-game" *ngIf="gameInProgress" (click)="gameStopped.emit()">
+    <button class="stop-game"
+     *ngIf="gameInProgress"
+     (click)="gameStopped.emit()"
+     [disabled]="!isActive">
       Stop
     </button>
   </div>
@@ -12,7 +18,7 @@
  <div *ngFor="let player of players">
   <div class="cards">
     <img *ngFor="let card of player.cards"
-         [src]="!gameInProgress ? card.face : player.isBot == false ? card.face : card.back" />
+         [src]="!gameInProgress ? card.face : player.id === blackJackData.userId ? card.face : card.back" />
   </div>
 
 

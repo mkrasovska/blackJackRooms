@@ -17,7 +17,7 @@ export class PlayroomComponent implements OnInit, OnDestroy {
   // public rooms: TRoom[] = [];
   public thisRoom: TRoom;
   // public newCount: number;
-  public blackJackData: TLocalData = this._myService.getMyData();
+  public blackJackData: TLocalData = this._myService.blackJackData;
   public players: {} = {};
   private _destroy$$ = new Subject();
 

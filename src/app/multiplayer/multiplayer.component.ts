@@ -8,11 +8,12 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./multiplayer.component.css']
 })
 export class MultiplayerComponent implements OnInit, OnDestroy {
-  public players: TPlayer[] = this.createPlayers(3, 1);
+  public players: TPlayer[] = this.createPlayers(1, 1);
   public gameInProgress: boolean = false;
   public allMessages: string[] = [];
   public messageText: string;
   public subRoom: Subscription;
+  public isReady: {} = {};
 
   private _newDeck: TCard[] = this._myService.createDeck();
   private _myDeck: TCard[] = this._myService.shuffleDeck(this._newDeck);
@@ -28,10 +29,16 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
       .getThisRoomData(this._myService.roomId)
       .subscribe((room: TRoom) => {
         this._myDeck = room.deck;
-        console.log(room.players);
-        console.log(room.players ? Object.values(room.players) : 'oops!');
-        console.log(this._myDeck);
-        // if (room.players) { this.players = Object.values(room.players);      }
+        this.allMessages = room.messages ? room.messages : [];
+        // this.isReady = room.ready;
+        // console.log(this.isReady);
+        // console.log(room.players ? Object.values(room.players) : 'oops!');
+        // console.log(this._myDeck);
+        if (room.players) {
+          this.players = Object.values(room.players);
+          // const isActive: boolean = this.players.every((player: TPlayer) => player.ready);
+          // console.log(isActive);
+        }
       });
   }
 
@@ -47,7 +54,9 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
       isWinner: false,
       isFinished: false,
       score: 0,
-      cards: []
+      cards: [],
+      ready: false,
+      isMyTurn: false
     };
     return player;
   }
@@ -57,7 +66,11 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
     let id: number = this._myService.blackJackData.userId;
     for (let i: number = 0; i < playersNumber; i++, id += 100000) {
       const isBot: boolean = i < humansNumber ? false : true;
-      const newPlayer: TPlayer = this.Player(`Vasya${i}`, isBot, id);
+      const newPlayer: TPlayer = this.Player(
+        `${this._myService.blackJackData.userName}${i}`,
+        isBot,
+        id
+      );
       players.push(newPlayer);
     }
     return players;
@@ -69,22 +82,48 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
   }
 
   public startNewGame(): void {
-    this._refillDeck();
-    // console.log(this._myDeck);
-    this._myDeck = this._myService.shuffleDeck(this._myDeck);
+    this.allMessages = [];
+    // this._refillDeck();
+    // this._myDeck = this._myService.shuffleDeck(this._myDeck);
+    this._myDeck = this._myService.shuffleDeck(this._newDeck);
+    console.log(this._myDeck);
     this._clearBoard();
     this.players.forEach((player: TPlayer) => {
       player.cards = [];
       player.isFinished = false;
       player.isWinner = false;
       player.score = 0;
+      // player.ready = false;
+      if (player.id === this._myService.blackJackData.userId) {
+        player.ready = true;
+      }
+
     });
-    this.players.forEach((player: TPlayer) => this._takeNewCard(player));
+    console.log(this.players);
+    console.log(this._myService.blackJackData.userId);
+    // this.players.forEach((player: TPlayer) => this._takeNewCard(player));
+
+    // this.players.forEach((player: TPlayer) => {
+    //   let takenCard: TCard;
+    //   if (player.id === this._myService.blackJackData.userId) {
+    //   takenCard = this._takeNewCard(player);
+    //     this._writeMessage(`${player.name} took ${takenCard.name} ${takenCard.symbol}`);
+        // this._myService.updatePlayer(player, this._myService.roomId);
+    //   }
+    //  });
+    this.players[0].isMyTurn = true;
     this.players.forEach((player: TPlayer) => {
       this._myService.updatePlayer(player, this._myService.roomId);
+      // if (player.id === this._myService.blackJackData.userId) {
+      //   player.ready = true;
+      // }
     });
     this._myService.updateDeck(this._myDeck, this._myService.roomId);
+    this._myService.removeMessages(this._myService.roomId);
+    console.log(this.players);
+    // this._myService.sayReady(this._myService.blackJackData.userId, this._myService.roomId);
     // console.log(this._myDeck);
+
   }
 
   public stopGame(): void {
@@ -94,11 +133,16 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
   }
 
   public nextRound(): void {
-    this.players.forEach((player: TPlayer) => {
-      if (!player.isFinished) {
-        this.nextTurn(player);
+    this.players.forEach((player: TPlayer, index: number) => {
+      if (player.id === this._myService.blackJackData.userId) {
+        if (!player.isFinished) {
+          this.nextTurn(player);
+          // const i: number = (index < this.players.length - 1 ) ? index + 1 : 0;
+          // this.players[i].isMyTurn = true;
+        }
       }
     });
+
     if (this.players.every((player: TPlayer) => player.isFinished)) {
       if (!this.players.some((player: TPlayer) => player.isWinner)) {
         const winner: TPlayer = this._myService.evaluateWinner(this.players);
@@ -115,6 +159,9 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
     }
 
     if (!player.isFinished) {
+      if (!player.cards) {
+        player.cards = [];
+      }
       const takenCard: TCard = this._takeNewCard(player);
       this._writeMessage(`${player.name} took ${takenCard.name} ${takenCard.symbol}`);
 
@@ -128,8 +175,10 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
         this._writeMessage(`${player.name} has won! Cheers!`);
       }
     }
+
     this._myService.updateDeck(this._myDeck, this._myService.roomId);
     this._myService.updatePlayer(player, this._myService.roomId);
+
   }
 
   private _clearBoard(): void {
@@ -163,5 +212,6 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
   private _writeMessage(message: string): void {
     this.messageText = message;
     this.allMessages.push(message);
+    this._myService.updateMessages(this.allMessages, this._myService.roomId);
   }
 }

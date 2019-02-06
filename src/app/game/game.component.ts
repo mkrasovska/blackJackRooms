@@ -25,7 +25,9 @@ export class GameComponent {
       isWinner: false,
       isFinished: false,
       score: 0,
-      cards: []
+      cards: [],
+      ready: false,
+      isMyTurn: false
     };
     return player;
   }

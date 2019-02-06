@@ -21,4 +21,12 @@
 
   </div>
 
+  <div *ngIf="gameInProgress" class="game-players">
+
+    <h2>Players</h2>
+
+    <p *ngFor="let player of players">{{player.name}}<span *ngIf="player.ready">: ready</span></p>
+
+  </div>
+
 </section>

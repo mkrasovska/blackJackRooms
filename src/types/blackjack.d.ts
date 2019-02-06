@@ -5,7 +5,9 @@ type TPlayer = {
   isWinner: boolean,
   isFinished: boolean,
   score: number,
-  id: number
+  id: number,
+  ready: boolean,
+  isMyTurn: boolean
 };
 
 type TCard = {
@@ -22,7 +24,9 @@ type TRoom = {
   id: number,
   counter: number,
   players: TPlayer[],
-  deck: TCard[]
+  deck: TCard[],
+  messages: string[]
+  // ready: {}
 }
 
 type TLocalData = {

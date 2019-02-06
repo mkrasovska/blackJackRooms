@@ -6,7 +6,10 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class MyFirstServiceService {
-  public blackJackData: TLocalData = this.getMyData();
+  public blackJackData: TLocalData = this.getMyData() || {
+    userName: `Kot${this.getRandom()}`,
+    userId: this.getRandom()
+  };
   public roomId: number = 0;
   public myBotsId: number[] = [
     this.blackJackData.userId + 100000,
@@ -18,6 +21,10 @@ export class MyFirstServiceService {
 
   public getRoomData(): Observable<{}[]> {
     return this.db.list('rooms').valueChanges();
+  }
+
+  public getRandom(): number {
+    return Math.ceil(Math.random() * 1000);
   }
 
   public getThisRoomData(id: number): Observable<{}> {
@@ -32,8 +39,22 @@ export class MyFirstServiceService {
     this.db.object('/rooms/room' + roomId + `/players/${player.id}`).update(player);
   }
 
+  // public sayReady(playerId: number, roomId: number): void {
+  //   let isReady = {[playerId] : true};
+  //   this.db.object('/rooms/room' + roomId + `/ready`).update(isReady);
+  //   console.log('updated');
+  // }
+
   public updateDeck(deck: TCard[], roomId: number): void {
     this.db.object('/rooms/room' + roomId + `/deck`).set(deck);
+  }
+
+  public updateMessages(messages: string[], roomId: number): void {
+    this.db.object('/rooms/room' + roomId + `/messages`).update(messages);
+  }
+
+  public removeMessages(roomId: number): void {
+    this.db.object('/rooms/room' + roomId + `/messages`).remove();
   }
 
   public scoreSum(player: TPlayer): number {
