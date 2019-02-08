@@ -3,7 +3,8 @@ import { ActivatedRoute, Params } from '@angular/router';
 import { AngularFireDatabase, AngularFireList } from 'angularfire2/database';
 import { MyFirstServiceService } from './../services/my-first-service.service';
 import { Subscription, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, pluck, switchMap, tap, filter, map } from 'rxjs/operators';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-playroom',
@@ -13,64 +14,75 @@ import { takeUntil } from 'rxjs/operators';
 export class PlayroomComponent implements OnInit, OnDestroy {
   public id: number;
   private sub: Subscription;
-  private sub1: Subscription;
-  // public rooms: TRoom[] = [];
   public thisRoom: TRoom;
-  // public newCount: number;
   public blackJackData: TLocalData = this._myService.blackJackData;
   public players: {} = {};
-  private _destroy$$ = new Subject();
+  public playerNumber: number = 0;
+  public mayIComeIn: boolean = false;
+  private _destroy$$: Subject<void> = new Subject();
+
+  public newPlayer: TPlayer = this._myService.Player(
+    this.blackJackData.userName,
+    false,
+    this.blackJackData.userId
+  );
 
   public constructor(
     private route: ActivatedRoute,
     public db: AngularFireDatabase,
-    private _myService: MyFirstServiceService
+    private _myService: MyFirstServiceService,
+    private router: Router
   ) {}
 
-  ngOnInit() {
-    // this._myService.getRoomData().subscribe((rooms: TRoom[]) => {
-    //   this.rooms = rooms;
-    // });
-
+  ngOnInit(): void {
     this.sub = this.route.params
-      .pipe(takeUntil(this._destroy$$))
-      .subscribe((params: Params) => {
-        this.id = +params['id'];
-        this._myService.roomId = +params['id'];
-      });
-
-    this.sub1 = this._myService
-      .getThisRoomData(this.id)
-      .pipe(takeUntil(this._destroy$$))
-      .subscribe((room: TRoom) => {
-        this.thisRoom = room;
-        this.players = room.players;
-        // console.log(this.players);
-        const playerNumber: number = this.players ? Object.keys(this.players).length : 0;
-        this.db.object('/rooms/room' + this.id).update({ counter: playerNumber });
-      });
-
-    this.db.object('/rooms/room' + this.id + `/players/${this.blackJackData.userId}`).update({
-      id: this.blackJackData.userId,
-      isBot: false,
-      name: this.blackJackData.userName,
-      cards: [],
-      isWinner: false,
-      isFinished: false,
-      score: 0
-    });
+      .pipe(
+        pluck('id'),
+        tap((roomId: number) => {
+          this._myService.roomId = roomId;
+        }),
+        switchMap((roomId: number) => this._myService.getThisRoomData(roomId)),
+        tap((room: TRoom) => {
+          if (!room) {
+            this.router.navigate(['game-multi']);
+          }
+        }),
+        filter((room: TRoom) => {
+          return room ? true : false;
+        }),
+        tap((room: TRoom) => {
+          this.thisRoom = room;
+          this.players = room.players;
+          this.playerNumber = this.players ? Object.keys(this.players).length : 0;
+        }),
+        filter((room: TRoom) => room.maxPlayers > this.playerNumber ||
+          !!room.players[this._myService.blackJackData.userId]),
+        filter((room: TRoom) => !room.gameInProgress),
+        tap(() => {
+          this.mayIComeIn = true;
+        }),
+        filter((room: TRoom) => {
+          return room.players ? !room.players[this._myService.blackJackData.userId] : true;
+        }),
+        tap(() => {
+          this._myService.updatePlayer(this.newPlayer, this._myService.roomId);
+          this.db
+            .object('/rooms/room' + this._myService.roomId)
+            .update({ counter: this.playerNumber });
+        }),
+        takeUntil(this._destroy$$)
+      )
+      .subscribe(() => {});
   }
 
   ngOnDestroy() {
     this._destroy$$.next();
 
-    this.db.object('/rooms/room' + this.id + `/players/${this.blackJackData.userId}`).remove();
+    this.db
+      .object('/rooms/room' + this._myService.roomId + `/players/${this.blackJackData.userId}`)
+      .remove();
     this._myService.myBotsId.forEach((botId) => {
-      this._myService.removePlayer(botId, this.id);
+      this._myService.removePlayer(botId, this._myService.roomId);
     });
-    const playerNumber: number = this.players ? Object.keys(this.players).length - 1 : 0;
-    this.db.object('/rooms/room' + this.id).update({ counter: playerNumber });
-    // this.sub.unsubscribe();
-    // this.sub1.unsubscribe();
   }
 }

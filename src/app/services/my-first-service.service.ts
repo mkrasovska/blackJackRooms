@@ -41,8 +41,35 @@ export class MyFirstServiceService {
   }
 
   public updatePlayer(player: TPlayer, roomId: number): void {
+    // debugger;
     this.db.object('/rooms/room' + roomId + `/players/${player.id}`).update(player);
   }
+
+  public Player(name: string, isBot: boolean, id: number): TPlayer {
+    const player: TPlayer = {
+      name,
+      isBot,
+      id,
+      isWinner: false,
+      isFinished: false,
+      score: 0,
+      cards: [],
+      ready: false,
+      isMyTurn: false
+    };
+    return player;
+  }
+
+// public nameGenerator(): string {
+//   let nicks = ['крот', 'бот', 'кот'];
+//   let character = ['жёваный', 'нёжеваный', 'недожёваный', 'просто'];
+//   let nickNames = [];
+//   nicks.forEach(name => {
+//     character.forEach(char => { nickNames.push(`${char} ${name}`) });
+//   });
+
+//   (nickNames);
+// }
 
   // public updatePlayers(players: TPlayer[], roomId: number): void {
   //   this.db.object('/rooms/room' + roomId + `/players`).update(players);

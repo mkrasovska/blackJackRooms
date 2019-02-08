@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MyFirstServiceService } from './../services/my-first-service.service';
-import { AngularFireDatabase, AngularFireList } from 'angularfire2/database';
-import { Observable } from 'rxjs';
-// import { Router } from '@angular/router';
+import { AngularFireDatabase } from 'angularfire2/database';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -12,48 +11,37 @@ import { Observable } from 'rxjs';
 })
 export class GameMultiComponent implements OnInit {
   public rooms: TRoom[] = [];
+  public roomCounter: number = 0;
 
-  // public router: Router;
+  public constructor(
+    private _myService: MyFirstServiceService,
+    public db: AngularFireDatabase,
+    private router: Router
+  ) {}
 
-  public constructor(private _myService: MyFirstServiceService, public db: AngularFireDatabase) {
-  }
-
-  public addRoom(roomName: number): void {
+  public addRoom(roomName: number, maxPlayers: number): void {
     const roomId: number = new Date().getUTCMilliseconds();
-    const blackJackData: TLocalData = this._myService.getMyData();
-    const masterId: number = blackJackData.userId;
     this.db.object('/rooms/room' + roomId).update({
       name: roomName,
+      maxPlayers,
       id: roomId,
       counter: 0,
-      masterId,
+      masterId: '',
       deck: this._myService.createDeck(),
       players: {},
       gameInProgress: false
     });
-    this.db.object('/rooms/room' + roomId + `/players/${masterId}`).update({
-      id: masterId,
-      isBot: false,
-      name: 'Master',
-      cards: [],
-      isWinner: false,
-      isFinished: false,
-      score: 0
-    });
+    this.router.navigate(['/playroom', roomId]);
   }
 
   public deleteRoom(roomId: number): void {
     this.db.list('/rooms').remove('room' + roomId);
   }
 
-  // public goToRoom(roomID: number): void {
-  //   this.router.navigate(['/room', roomID]);
-  // }
-
   ngOnInit() {
-     this._myService.getRoomData()
-      .subscribe((rooms: TRoom[]) => {
-        this.rooms = rooms;
-      });
+    this._myService.getRoomData().subscribe((rooms: TRoom[]) => {
+      this.rooms = rooms;
+      this.rooms.forEach((myroom: TRoom) => {myroom.counter = myroom.players ? Object.keys(myroom.players).length : 0; });
+    });
   }
 }

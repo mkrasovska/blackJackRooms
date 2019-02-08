@@ -5,20 +5,25 @@ import { GameMultiComponent } from './game-multi/game-multi.component';
 import { MenuComponent } from './menu/menu.component';
 import { PlayroomComponent } from './playroom/playroom.component';
 import { NotFoundPageComponent } from './not-found-page/not-found-page.component';
+import { LoginGuardGuard } from './guards/login-guard.guard';
+import { RoomGuardGuard } from './guards/room-guard.guard';
+import { CanActivate } from '@angular/router/src/utils/preactivation';
 
 export const appRoutes: Routes = [
   {
     path: '',
     redirectTo: 'menu',
-    pathMatch: 'full'
+    pathMatch: 'full',
   },
   {
     path: 'menu',
-    component: MenuComponent
+    component: MenuComponent,
+    canActivate: [LoginGuardGuard]
   },
   {
     path: 'game',
-    component: GameComponent
+    component: GameComponent,
+    canActivate: [LoginGuardGuard]
   },
   {
     path: 'login',
@@ -26,11 +31,13 @@ export const appRoutes: Routes = [
   },
   {
     path: 'game-multi',
-    component: GameMultiComponent
+    component: GameMultiComponent,
+    canActivate: [LoginGuardGuard]
   },
   {
     path: 'playroom/:id',
-    component: PlayroomComponent
+    component: PlayroomComponent,
+    // canActivate: [RoomGuardGuard]
   },
   {
     path: '**',

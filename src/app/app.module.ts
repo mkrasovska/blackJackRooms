@@ -20,6 +20,8 @@ import { GameMultiComponent } from './game-multi/game-multi.component';
 import { LoginComponent } from './login/login.component';
 import { PlayroomComponent } from './playroom/playroom.component';
 import { MultiplayerComponent } from './multiplayer/multiplayer.component';
+import { LoginGuardGuard } from './guards/login-guard.guard';
+import { RoomGuardGuard } from './guards/room-guard.guard';
 
 
 @NgModule({
@@ -42,7 +44,7 @@ import { MultiplayerComponent } from './multiplayer/multiplayer.component';
     AngularFireDatabaseModule,
     FormsModule
   ],
-  providers: [MyFirstServiceService],
+  providers: [MyFirstServiceService, LoginGuardGuard, RoomGuardGuard],
   bootstrap: [AppComponent]
 })
 export class AppModule {}

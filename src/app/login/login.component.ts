@@ -8,7 +8,6 @@ import { MyFirstServiceService } from './../services/my-first-service.service';
 })
 export class LoginComponent implements OnInit {
   public blackJackData = JSON.parse(localStorage.getItem('blackJackData')) || {};
-  // public nameIsKnown: string = this.blackJackData.userName;
   public userName: string = this.blackJackData.userName;
 
   public constructor(private _myService: MyFirstServiceService) {}

@@ -17,7 +17,7 @@ export class FieldComponent implements OnInit, OnDestroy {
 
   public subRoom: Subscription;
   public blackJackData: TLocalData = this._myService.blackJackData;
-  private _destroy$$ = new Subject();
+  private _destroy$$: Subject<void> = new Subject();
   public isActive: boolean = false;
   public isMyTurn: boolean = false;
   public playersObj: {} = {};

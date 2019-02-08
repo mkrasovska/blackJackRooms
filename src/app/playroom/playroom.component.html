@@ -1,10 +1,10 @@
-<p>
-  playroom works!
-</p>
 
-<div>
-  Room: {{id}}
+<div *ngIf="!mayIComeIn">
+  <!-- Sorry, your there is no space for you in the room number {{id}}
+  Please -->
+  <img src="../../assets/img/spinner.gif">
+  <a class="menu-button" routerLink="/game-multi">Select other room</a>
 </div>
 
-<app-multiplayer></app-multiplayer>
+<app-multiplayer *ngIf=mayIComeIn></app-multiplayer>
 
