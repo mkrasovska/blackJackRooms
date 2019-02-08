@@ -40,6 +40,10 @@ export class MyFirstServiceService {
     this.db.object('/rooms/room' + roomId + `/gameInProgress`).set(gameInProgress);
   }
 
+  public changeMaster(newMaterId: number, roomId: number): void {
+    this.db.object('/rooms/room' + roomId + `/masterId`).set(newMaterId);
+  }
+
   public updatePlayer(player: TPlayer, roomId: number): void {
     // debugger;
     this.db.object('/rooms/room' + roomId + `/players/${player.id}`).update(player);
@@ -60,16 +64,16 @@ export class MyFirstServiceService {
     return player;
   }
 
-// public nameGenerator(): string {
-//   let nicks = ['крот', 'бот', 'кот'];
-//   let character = ['жёваный', 'нёжеваный', 'недожёваный', 'просто'];
-//   let nickNames = [];
-//   nicks.forEach(name => {
-//     character.forEach(char => { nickNames.push(`${char} ${name}`) });
-//   });
+  // public nameGenerator(): string {
+  //   let nicks = ['крот', 'бот', 'кот'];
+  //   let character = ['жёваный', 'нёжеваный', 'недожёваный', 'просто'];
+  //   let nickNames = [];
+  //   nicks.forEach(name => {
+  //     character.forEach(char => { nickNames.push(`${char} ${name}`) });
+  //   });
 
-//   (nickNames);
-// }
+  //   (nickNames);
+  // }
 
   // public updatePlayers(players: TPlayer[], roomId: number): void {
   //   this.db.object('/rooms/room' + roomId + `/players`).update(players);

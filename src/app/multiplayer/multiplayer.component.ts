@@ -1,6 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MyFirstServiceService } from './../services/my-first-service.service';
-import { Subscription } from 'rxjs';
+import { Subscription, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+
 // import { getPlayers } from '@angular/core/src/render3/players';
 
 @Component({
@@ -9,6 +11,7 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./multiplayer.component.css']
 })
 export class MultiplayerComponent implements OnInit, OnDestroy {
+  public thisRoom: TRoom;
   public players: TPlayer[] = this.createPlayers(1, 1);
   public gameInProgress: boolean = false;
   public allMessages: string[] = [];
@@ -16,6 +19,7 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
   public subRoom: Subscription;
   public myIndex: number;
   public playersObj: {} = {};
+  private _destroy$$: Subject<void> = new Subject;
 
   private _newDeck: TCard[] = this._myService.createDeck();
   private _myDeck: TCard[] = this._myService.shuffleDeck(this._newDeck);
@@ -29,7 +33,9 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
     // );
     this.subRoom = this._myService
       .getThisRoomData(this._myService.roomId)
+      .pipe(takeUntil(this._destroy$$))
       .subscribe((room: TRoom) => {
+        this.thisRoom = room;
         this._myDeck = room.deck;
         this.allMessages = room.messages ? room.messages : [];
         if (room.players) {
@@ -48,7 +54,13 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.subRoom.unsubscribe();
+    // this.subRoom.unsubscribe();
+    if (this.thisRoom.masterId === this._myService.blackJackData.userId) {
+      const nextMasterIndex: number = (this.myIndex < this.players.length - 1) ? this.myIndex + 1 : 0;
+      const nextMasterId: number = this.players[nextMasterIndex].id;
+      this._myService.changeMaster(nextMasterId, this.thisRoom.id);
+    }
+    this._destroy$$.next();
   }
 
   public Player(name: string, isBot: boolean, id: number): TPlayer {

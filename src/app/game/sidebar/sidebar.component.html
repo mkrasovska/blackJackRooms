@@ -4,6 +4,11 @@
   </button>
   <a class="go-to-menu" routerLink="/menu">To main menu</a>
 
+  <button class="new-game"
+    *ngIf="thisRoom ? thisRoom.masterId === blackJackData.userId : false">
+    Master's button
+  </button>
+
   <div class="game-log">
     <!-- <h2>Game Log </h2> -->
 

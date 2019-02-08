@@ -12,6 +12,7 @@ import { Router } from '@angular/router';
 export class GameMultiComponent implements OnInit {
   public rooms: TRoom[] = [];
   public roomCounter: number = 0;
+  public deleteIsDisables: boolean ;
 
   public constructor(
     private _myService: MyFirstServiceService,
@@ -23,10 +24,10 @@ export class GameMultiComponent implements OnInit {
     const roomId: number = new Date().getUTCMilliseconds();
     this.db.object('/rooms/room' + roomId).update({
       name: roomName,
-      maxPlayers,
+      maxPlayers: maxPlayers || 2,
       id: roomId,
-      counter: 0,
-      masterId: '',
+      // counter: 0,
+      masterId: this._myService.blackJackData.userId,
       deck: this._myService.createDeck(),
       players: {},
       gameInProgress: false

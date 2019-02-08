@@ -1,5 +1,9 @@
 <div class="main-container">
-  <app-sidebar [allMessages]="allMessages" [players]="players" [gameInProgress]="gameInProgress" (gameStarted)="blackJackInit()">
+  <app-sidebar [allMessages]="allMessages"
+    [thisRoom]="thisRoom"
+    [players]="players"
+    [gameInProgress]="gameInProgress"
+    (gameStarted)="blackJackInit()">
   </app-sidebar>
 
   <app-field (cardTaken)="nextRound()" [players]="players" [gameInProgress]="gameInProgress" (gameStopped)="stopGame()">

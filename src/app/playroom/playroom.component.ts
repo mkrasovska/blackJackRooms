@@ -44,20 +44,35 @@ export class PlayroomComponent implements OnInit, OnDestroy {
         switchMap((roomId: number) => this._myService.getThisRoomData(roomId)),
         tap((room: TRoom) => {
           if (!room) {
-            this.router.navigate(['game-multi']);
+            this.router.navigate(['closed-room']);
           }
         }),
-        filter((room: TRoom) => {
-          return room ? true : false;
-        }),
+        filter(Boolean),
         tap((room: TRoom) => {
           this.thisRoom = room;
           this.players = room.players;
           this.playerNumber = this.players ? Object.keys(this.players).length : 0;
         }),
-        filter((room: TRoom) => room.maxPlayers > this.playerNumber ||
-          !!room.players[this._myService.blackJackData.userId]),
-        filter((room: TRoom) => !room.gameInProgress),
+        tap((room: TRoom) => {
+          if (room.gameInProgress && !room.players[this._myService.blackJackData.userId]) {
+            this.router.navigate(['closed-room']);
+          }
+          if (
+            room.maxPlayers <= this.playerNumber &&
+            !room.players[this._myService.blackJackData.userId]
+          ) {
+            this.router.navigate(['closed-room']);
+          }
+        }),
+        filter(
+          (room: TRoom) =>
+            room.maxPlayers > this.playerNumber ||
+            !!room.players[this._myService.blackJackData.userId]
+        ),
+        filter(
+          (room: TRoom) =>
+            !room.gameInProgress || !!room.players[this._myService.blackJackData.userId]
+        ),
         tap(() => {
           this.mayIComeIn = true;
         }),
@@ -66,9 +81,9 @@ export class PlayroomComponent implements OnInit, OnDestroy {
         }),
         tap(() => {
           this._myService.updatePlayer(this.newPlayer, this._myService.roomId);
-          this.db
-            .object('/rooms/room' + this._myService.roomId)
-            .update({ counter: this.playerNumber });
+          // this.db
+          //   .object('/rooms/room' + this._myService.roomId)
+          //   .update({ counter: this.playerNumber });
         }),
         takeUntil(this._destroy$$)
       )
@@ -81,6 +96,13 @@ export class PlayroomComponent implements OnInit, OnDestroy {
     this.db
       .object('/rooms/room' + this._myService.roomId + `/players/${this.blackJackData.userId}`)
       .remove();
+    if (this.playerNumber <= 1) {
+      this.db
+        .object(
+          '/rooms/room' + this._myService.roomId)
+        .remove();
+    }
+
     this._myService.myBotsId.forEach((botId) => {
       this._myService.removePlayer(botId, this._myService.roomId);
     });

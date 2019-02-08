@@ -16,7 +16,8 @@
 
   <a class="menu-button" [routerLink]="['/playroom', room.id]"> Enter room {{room.id}}</a>
 
-  <button (click)="deleteRoom(room.id)">
+  <button (click)="deleteRoom(room.id)"
+   [disabled]="room.gameInProgress" >
     Delete
   </button>
 </div>

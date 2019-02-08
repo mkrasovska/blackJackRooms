@@ -27,7 +27,8 @@ type TRoom = {
   deck: TCard[],
   messages: string[]
   gameInProgress: boolean,
-  maxPlayers: number
+  maxPlayers: number,
+  masterId: number
 }
 
 type TLocalData = {

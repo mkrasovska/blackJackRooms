@@ -5,6 +5,7 @@ import { GameMultiComponent } from './game-multi/game-multi.component';
 import { MenuComponent } from './menu/menu.component';
 import { PlayroomComponent } from './playroom/playroom.component';
 import { NotFoundPageComponent } from './not-found-page/not-found-page.component';
+import { ClosedRoomComponent } from './closed-room/closed-room.component';
 import { LoginGuardGuard } from './guards/login-guard.guard';
 import { RoomGuardGuard } from './guards/room-guard.guard';
 import { CanActivate } from '@angular/router/src/utils/preactivation';
@@ -38,6 +39,10 @@ export const appRoutes: Routes = [
     path: 'playroom/:id',
     component: PlayroomComponent,
     // canActivate: [RoomGuardGuard]
+  },
+  {
+    path: 'closed-room',
+    component: ClosedRoomComponent,
   },
   {
     path: '**',
