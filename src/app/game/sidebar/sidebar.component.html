@@ -1,37 +1,63 @@
 <section class="side-bar">
-  <button class="new-game" (click)="gameStarted.emit()">
+  <!-- <button class="new-game"
+   (click)="gameStarted.emit()"
+   *ngIf="!gameInProgress">
     New game
-  </button>
-  <a class="go-to-menu" routerLink="/menu">To main menu</a>
+  </button> -->
+  <a class="go-to-menu"
+   routerLink="/menu"
+   *ngIf="!gameInProgress">
+   Menu
+  </a>
+
+  <p *ngIf="!gameInProgress">
+    Players: {{players ? players.length : 0}}/{{thisRoom ? thisRoom.maxPlayers : 0}}
+  </p>
+
+  <div class="master-comtrols"
+      *ngIf="thisRoom ? thisRoom.masterId === blackJackData.userId && !gameInProgress : false">
+
+  <p>
+    Add
+     <input class="bot-number"
+      placeholder="0"
+      #numberOfBots>
+    bots
+  </p>
 
   <button class="new-game"
-    *ngIf="thisRoom ? thisRoom.masterId === blackJackData.userId : false">
-    Master's button
+   (click)="gameStarted.emit(numberOfBots.value); numberOfBots.value=''">
+    Start
   </button>
+</div>
 
   <div class="game-log">
-    <!-- <h2>Game Log </h2> -->
-
     <p *ngFor="let message of allMessages">
       {{ message }}
+    </p>
+  </div>
+
+  <div class="game-score">
+
+    <h2>
+      <span *ngIf="!gameInProgress">Game score:</span>
+      <span *ngIf="gameInProgress">Players:</span>
+    </h2>
+
+    <p *ngFor="let player of players"
+    [class.master]="thisRoom ? thisRoom.masterId === player.id : false"
+    [class.is-finished]="player.isFinished && gameInProgress">
+    {{player.name}}<span *ngIf="!gameInProgress">: {{player.score}}</span>
     </p>
 
   </div>
 
-  <div *ngIf="!gameInProgress" class="game-score">
-
-    <h2>Game score:</h2>
-
-    <p *ngFor="let player of players">{{player.name}}: {{player.score}}</p>
-
-  </div>
-
-  <div *ngIf="!gameInProgress" class="game-players">
+  <!-- <div *ngIf="!gameInProgress" class="game-players">
 
     <h2>Players</h2>
 
     <p *ngFor="let player of players">{{player.name}}<span *ngIf="player.ready">: ready</span></p>
 
-  </div>
+  </div> -->
 
 </section>

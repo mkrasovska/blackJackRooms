@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import { AngularFireDatabase, AngularFireList } from 'angularfire2/database';
 import { MyFirstServiceService } from './../services/my-first-service.service';
-import { Subscription, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 import { takeUntil, pluck, switchMap, tap, filter, map } from 'rxjs/operators';
 import { Router } from '@angular/router';
 
@@ -13,10 +13,11 @@ import { Router } from '@angular/router';
 })
 export class PlayroomComponent implements OnInit, OnDestroy {
   public id: number;
-  private sub: Subscription;
+  // private sub: Subscription;
   public thisRoom: TRoom;
   public blackJackData: TLocalData = this._myService.blackJackData;
   public players: {} = {};
+  // public playersArr: TPlayer[] = [];
   public playerNumber: number = 0;
   public mayIComeIn: boolean = false;
   private _destroy$$: Subject<void> = new Subject();
@@ -35,7 +36,7 @@ export class PlayroomComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.sub = this.route.params
+    this.route.params
       .pipe(
         pluck('id'),
         tap((roomId: number) => {
@@ -51,6 +52,7 @@ export class PlayroomComponent implements OnInit, OnDestroy {
         tap((room: TRoom) => {
           this.thisRoom = room;
           this.players = room.players;
+          // this.playersArr = room.players ? Object.values(room.players) : [];
           this.playerNumber = this.players ? Object.keys(this.players).length : 0;
         }),
         tap((room: TRoom) => {
@@ -81,9 +83,6 @@ export class PlayroomComponent implements OnInit, OnDestroy {
         }),
         tap(() => {
           this._myService.updatePlayer(this.newPlayer, this._myService.roomId);
-          // this.db
-          //   .object('/rooms/room' + this._myService.roomId)
-          //   .update({ counter: this.playerNumber });
         }),
         takeUntil(this._destroy$$)
       )
@@ -96,15 +95,8 @@ export class PlayroomComponent implements OnInit, OnDestroy {
     this.db
       .object('/rooms/room' + this._myService.roomId + `/players/${this.blackJackData.userId}`)
       .remove();
-    if (this.playerNumber <= 1) {
-      this.db
-        .object(
-          '/rooms/room' + this._myService.roomId)
-        .remove();
-    }
 
-    this._myService.myBotsId.forEach((botId) => {
-      this._myService.removePlayer(botId, this._myService.roomId);
-    });
+    this._myService.deleteEmptyRoom(Object.values(this.players), this.thisRoom.id);
+
   }
 }

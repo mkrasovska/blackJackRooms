@@ -1,4 +1,4 @@
-<button type="submit" (click)=addRoom(roomName.value,maxPlayers.value)>
+<button type="submit" (click)=addRoom(roomName.value,+maxPlayers.value)>
   Add room
 </button>
 <input #roomName placeholder="room name">
@@ -17,7 +17,7 @@
   <a class="menu-button" [routerLink]="['/playroom', room.id]"> Enter room {{room.id}}</a>
 
   <button (click)="deleteRoom(room.id)"
-   [disabled]="room.gameInProgress" >
+   [disabled]="room.players" >
     Delete
   </button>
 </div>

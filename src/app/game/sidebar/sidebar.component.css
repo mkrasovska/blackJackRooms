@@ -1,5 +1,5 @@
 .new-game  {
-  width: 150px;
+  width: 80px;
   height: 30px;
   margin: 10px;
   border-radius: 20px;
@@ -10,7 +10,7 @@
   border: 2px solid gray;
   border-radius: 20px;
   display: inline-block;
-  width: 120px;
+  width: 55px;
   background-color: rgb(73, 128, 223);
   color: black;
   text-decoration: none;
@@ -22,3 +22,16 @@
   box-shadow: 0 0 5px rgba(0,0,0,0.3);
   background: rgb(103, 152, 238);
 }
+
+.master {
+  color: red;
+}
+
+.is-finished {
+  opacity: 0.5;
+}
+
+.bot-number{
+  width: 30px;
+}
+

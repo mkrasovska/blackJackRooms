@@ -15,15 +15,13 @@
     </button>
   </div>
 
- <div *ngFor="let player of players">
+ <div *ngFor="let player of players"
+  class="player-field">
   <div class="cards">
     <img *ngFor="let card of player.cards"
          [src]="!gameInProgress ? card.face : player.id === blackJackData.userId ? card.face : card.back" />
   </div>
+  <img class="turn-arrow" *ngIf="player.isMyTurn && thisRoom.gameInProgress" src="../../../assets/img/arrow-31182_960_720.png" />
 
-
-  <!-- <div class="cards">
-      <img *ngFor="let card of players[0].cards" [src]="card.face" />
-  </div> -->
 </div>
 </section>

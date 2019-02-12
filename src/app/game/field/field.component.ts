@@ -21,6 +21,7 @@ export class FieldComponent implements OnInit, OnDestroy {
   public isActive: boolean = false;
   public isMyTurn: boolean = false;
   public playersObj: {} = {};
+  public thisRoom: {} = {};
 
   constructor(private _myService: MyFirstServiceService) {}
 
@@ -29,13 +30,14 @@ export class FieldComponent implements OnInit, OnDestroy {
       .getThisRoomData(this._myService.roomId)
       .pipe(takeUntil(this._destroy$$))
       .subscribe((room: TRoom) => {
+        this.thisRoom = room;
         if (room.players) {
           this.players = Object.values(room.players);
           this.playersObj = room.players;
-          console.log(this.playersObj);
+          // console.log(this.playersObj);
           this.isActive = this.players.every((player: TPlayer) => player.ready);
           this.isMyTurn = this.playersObj[this._myService.blackJackData.userId].isMyTurn;
-          console.log(this.isActive);
+          // console.log(this.isActive);
         }
       });
   }

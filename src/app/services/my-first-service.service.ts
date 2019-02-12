@@ -40,6 +40,10 @@ export class MyFirstServiceService {
     this.db.object('/rooms/room' + roomId + `/gameInProgress`).set(gameInProgress);
   }
 
+  public changeMaxPlayers(newMaxPlayers: number, roomId: number): void {
+    this.db.object('/rooms/room' + roomId + `/maxPlayers`).set(newMaxPlayers);
+  }
+
   public changeMaster(newMaterId: number, roomId: number): void {
     this.db.object('/rooms/room' + roomId + `/masterId`).set(newMaterId);
   }
@@ -58,10 +62,24 @@ export class MyFirstServiceService {
       isFinished: false,
       score: 0,
       cards: [],
-      ready: false,
+      ready: true,
       isMyTurn: false
     };
     return player;
+  }
+
+  public randomNick(): string {
+    const nicks: string[] = ['крот', 'бот', 'кот'];
+    const character: string[] = ['жёваный', 'нёжеваный', 'недожёваный', 'просто'];
+    const nickNames: string[] = [];
+    nicks.forEach((name: string) => {
+      character.forEach((char: string) => {
+        nickNames.push(`${char} ${name}`);
+       });
+    });
+    const randomName: string = nickNames[Math.ceil(Math.random() * nickNames.length)];
+    // console.log(nickNames);
+    return randomName;
   }
 
   // public nameGenerator(): string {
@@ -95,6 +113,12 @@ export class MyFirstServiceService {
 
   public removeMessages(roomId: number): void {
     this.db.object('/rooms/room' + roomId + `/messages`).remove();
+  }
+
+  public deleteEmptyRoom(players: TPlayer[], roomId: number): void {
+  if (players.every((player: TPlayer) => player.id === this.blackJackData.userId || player.isBot)) {
+    this.db.object('/rooms/room' + roomId).remove();
+   }
   }
 
   public scoreSum(player: TPlayer): number {
@@ -167,7 +191,7 @@ export class MyFirstServiceService {
         win = player;
       }
       return win;
-    }, players[1]);
+    }, this.Player('', false, 1));
 
     return winner;
   }
