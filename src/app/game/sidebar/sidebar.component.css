@@ -35,3 +35,16 @@
   width: 30px;
 }
 
+.is-bot {
+  background-image: url(../../../assets/img/bot.png);
+  background-position-x: 95%;
+  background-repeat: no-repeat;
+  background-size: 20px;
+}
+
+.is-human {
+  background-image: url(../../../assets/img/human.png);
+  background-position-x: 95%;
+  background-repeat: no-repeat;
+  background-size: 25px;
+}

@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MyFirstServiceService } from './../services/my-first-service.service';
 import { Subscription, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, take } from 'rxjs/operators';
 
 // import { getPlayers } from '@angular/core/src/render3/players';
 
@@ -19,6 +19,7 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
   public subRoom: Subscription;
   public myIndex: number;
   public playersObj: {} = {};
+  public records: {} = {};
   private _destroy$$: Subject<void> = new Subject();
 
   private _newDeck: TCard[] = this._myService.createDeck();
@@ -31,6 +32,13 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
     // this.players.forEach((player: TPlayer) =>
     //   this._myService.updatePlayer(player, this._myService.roomId)
     // );
+    this._myService.getRecords().pipe(take(1))
+    .subscribe((records: {}) => {
+      this.records = records || {};
+      console.log(`subscribe`);
+      console.log(this.records);
+     });
+
     this.subRoom = this._myService
       .getThisRoomData(this._myService.roomId)
       .pipe(takeUntil(this._destroy$$))
@@ -179,6 +187,7 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
   }
 
   public nextTurn(player: TPlayer): void {
+    console.log('Next Turn');
     if (player.isBot && player.score >= 15 && !player.isFinished) {
       this._writeMessage(`${player.name} stopped the game`);
       player.isFinished = true;
@@ -221,6 +230,11 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
     if (this.players.every((_player: TPlayer) => _player.isFinished)) {
       const winner: TPlayer = this._myService.evaluateWinner(this.players);
       this._writeMessage(`${winner.name} has won`);
+      // if (this.thisRoom.masterId === this._myService.blackJackData.userId) {
+      this._myService.updateRecords(this.players, this.records);
+      console.log(`update`);
+      console.log(this.records);
+      // }
     }
   }
 

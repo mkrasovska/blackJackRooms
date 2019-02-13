@@ -23,6 +23,7 @@ import { MultiplayerComponent } from './multiplayer/multiplayer.component';
 import { LoginGuardGuard } from './guards/login-guard.guard';
 import { RoomGuardGuard } from './guards/room-guard.guard';
 import { ClosedRoomComponent } from './closed-room/closed-room.component';
+import { RecordsComponent } from './records/records.component';
 
 
 @NgModule({
@@ -37,7 +38,8 @@ import { ClosedRoomComponent } from './closed-room/closed-room.component';
     LoginComponent,
     PlayroomComponent,
     MultiplayerComponent,
-    ClosedRoomComponent
+    ClosedRoomComponent,
+    RecordsComponent
   ],
   imports: [
     BrowserModule,

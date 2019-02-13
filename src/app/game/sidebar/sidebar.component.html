@@ -46,7 +46,10 @@
 
     <p *ngFor="let player of players"
     [class.master]="thisRoom ? thisRoom.masterId === player.id : false"
-    [class.is-finished]="player.isFinished && gameInProgress">
+    [class.is-finished]="player.isFinished && gameInProgress"
+    [class.is-human]="!player.isBot"
+    [class.is-bot]="player.isBot">
+
     {{player.name}}<span *ngIf="!gameInProgress">: {{player.score}}</span>
     </p>
 

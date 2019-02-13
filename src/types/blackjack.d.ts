@@ -35,3 +35,10 @@ type TLocalData = {
   userName: string,
   userId: number
 }
+
+type TRecord = {
+  name: string,
+  id: number,
+  victories: number;
+  games: number
+};

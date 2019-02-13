@@ -9,20 +9,24 @@ export class MyFirstServiceService {
   public randomUserNumber: number = this.getRandom();
 
   public blackJackData: TLocalData = this.getMyData() || {
-    userName: `Kot${this.randomUserNumber}`,
+    userName: this.randomNickHuman(),
     userId: this.randomUserNumber
   };
   public roomId: number = 0;
-  public myBotsId: number[] = [
-    this.blackJackData.userId + 100000,
-    this.blackJackData.userId + 200000,
-    this.blackJackData.userId + 300000
-  ];
+  // public myBotsId: number[] = [
+  //   this.blackJackData.userId + 100000,
+  //   this.blackJackData.userId + 200000,
+  //   this.blackJackData.userId + 300000
+  // ];
 
   public constructor(public db: AngularFireDatabase) {}
 
   public getRoomData(): Observable<{}[]> {
     return this.db.list('rooms').valueChanges();
+  }
+
+  public getRecords(): Observable<{}> {
+    return this.db.object('records').valueChanges();
   }
 
   public getRandom(): number {
@@ -69,8 +73,8 @@ export class MyFirstServiceService {
   }
 
   public randomNick(): string {
-    const nicks: string[] = ['крот', 'бот', 'кот'];
-    const character: string[] = ['жёваный', 'нёжеваный', 'недожёваный', 'просто'];
+    const nicks: string[] = ['Крот', 'Бот', 'Кот'];
+    const character: string[] = ['Жёваный', 'Нёжеваный', 'Недожёваный', 'Просто'];
     const nickNames: string[] = [];
     nicks.forEach((name: string) => {
       character.forEach((char: string) => {
@@ -79,6 +83,12 @@ export class MyFirstServiceService {
     });
     const randomName: string = nickNames[Math.ceil(Math.random() * nickNames.length)];
     // console.log(nickNames);
+    return randomName;
+  }
+
+  public randomNickHuman(): string {
+    const nickNames: string[] = ['Штирлиц', 'Бабайка', 'Балалайка', 'Cool Hacker', 'Чиполино', 'Шапокляк'];
+    const randomName: string = nickNames[Math.ceil(Math.random() * nickNames.length)];
     return randomName;
   }
 
@@ -119,6 +129,31 @@ export class MyFirstServiceService {
   if (players.every((player: TPlayer) => player.id === this.blackJackData.userId || player.isBot)) {
     this.db.object('/rooms/room' + roomId).remove();
    }
+  }
+
+  public updateRecords(players: TPlayer[], records: {}): void {
+    players.forEach((player: TPlayer) => {
+     if (!player.isBot) {
+       records[player.id] = records[player.id]
+         ? {
+             victories: records[player.id].victories,
+             games: records[player.id].games + 1,
+             name: player.name,
+             id: player.id
+           }
+         : {
+             victories: 0,
+             games: 1,
+             name: player.name,
+           id: player.id
+           };
+    if (player.isWinner) {
+      records[player.id].victories++;
+    }
+    // console.log(records);
+       this.db.object(`/records`).update(records);
+    }
+   });
   }
 
   public scoreSum(player: TPlayer): number {
@@ -190,6 +225,7 @@ export class MyFirstServiceService {
       if (player.score > win.score && player.score <= 21) {
         win = player;
       }
+      win.isWinner = true;
       return win;
     }, this.Player('', false, 1));
 
