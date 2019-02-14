@@ -78,7 +78,7 @@ export class MyFirstServiceService {
         nickNames.push(`${char} ${name}`);
       });
     });
-    const randomName: string = nickNames[Math.ceil(Math.random() * nickNames.length)];
+    const randomName: string = nickNames[Math.floor(Math.random() * nickNames.length)];
     // console.log(nickNames);
     return randomName;
   }

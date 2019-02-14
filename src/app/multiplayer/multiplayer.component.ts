@@ -24,23 +24,26 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
 
   private _destroy$$: Subject<void> = new Subject();
 
-  private _newDeck: TCard[] = this._myService.createDeck();
-  private _myDeck: TCard[] = this._myService.shuffleDeck(this._newDeck);
+  // private _newDeck: TCard[] = this._myService.createDeck();
+  // private _myDeck: TCard[] = this._myService.shuffleDeck(this._newDeck);
+  private _myDeck: TCard[];
 
   public constructor(private _myService: MyFirstServiceService) {}
 
   public ngOnInit() {
-    this._myService.updateDeck(this._myDeck, this._myService.roomId);
+    // this._myService.updateDeck(this._myDeck, this._myService.roomId);
     this.blackJackData = this._myService.getMyData() || this._myService.randomUserData;
     // this.players.forEach((player: TPlayer) =>
     //   this._myService.updatePlayer(player, this._myService.roomId)
     // );
-    this._myService.getRecords().pipe(take(1))
-    .subscribe((records: {}) => {
-      this.records = records || {};
-      console.log(`subscribe`);
-      console.log(this.records);
-     });
+    this._myService
+      .getRecords()
+      .pipe(take(1))
+      .subscribe((records: {}) => {
+        this.records = records || {};
+        console.log(`subscribe`);
+        console.log(this.records);
+      });
 
     this.subRoom = this._myService
       .getThisRoomData(this._myService.roomId)
@@ -79,10 +82,9 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
     this._destroy$$.next();
   }
 
-
   public createBots(botsNumber: number): TPlayer[] {
     const bots: TPlayer[] = [];
-    let id: number  = this._myService.getRandom();
+    let id: number = this._myService.getRandom();
     for (let i: number = 0; i < botsNumber; i++, id += 100000) {
       const newBot: TPlayer = this._myService.createPlayer(this._myService.randomNick(), true, id);
       bots.push(newBot);
@@ -109,7 +111,10 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
 
   public startNewGame(): void {
     this._myService.changeInProgress(true, this._myService.roomId);
-    this._myDeck = this._myService.shuffleDeck(this._newDeck);
+    this._myDeck = this._myService.shuffleDeck(this._myService.createDeck());
+    this._myService.updateDeck(this._myDeck, this._myService.roomId);
+    console.log(this._myDeck);
+    // console.log(this._newDeck);
     this._clearBoard();
     this.players.forEach((player: TPlayer) => {
       player.cards = [];
@@ -142,10 +147,7 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
     this.nextRound();
   }
 
-  public nextRound(): void {
-    this.nextTurn(this.players[this.myIndex]);
-    // this._myService.updatePlayer(this.players[this.myIndex], this._myService.roomId);
-
+  public switchTurn(): number {
     let nextIndex: number = this.findNextIndex(this.myIndex);
 
     if (!this.players.every((player: TPlayer) => player.isFinished)) {
@@ -155,7 +157,7 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
           this._myService.updatePlayer(this.players[nextIndex], this._myService.roomId);
         }
         nextIndex = this.findNextIndex(nextIndex);
-        if (nextIndex === this.myIndex) {
+        if (nextIndex === this.myIndex && !this.players.some((player: TPlayer) => player.isBot && !player.isFinished)) {
           break;
         }
       }
@@ -163,6 +165,14 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
 
     this.players[this.myIndex].isMyTurn = false;
     this.players[nextIndex].isMyTurn = true;
+    return nextIndex;
+  }
+
+  public nextRound(): void {
+    this.nextTurn(this.players[this.myIndex]);
+
+    const nextIndex: number = this.switchTurn();
+
     this._myService.updateDeck(this._myDeck, this._myService.roomId);
     this._myService.updatePlayer(this.players[this.myIndex], this._myService.roomId);
     this._myService.updatePlayer(this.players[nextIndex], this._myService.roomId);
@@ -173,7 +183,6 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
   }
 
   public nextTurn(player: TPlayer): void {
-    console.log('Next Turn');
     if (player.isBot && player.score >= 15 && !player.isFinished) {
       this._writeMessage(`${player.name} stopped the game`);
       player.isFinished = true;
@@ -194,11 +203,11 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
         this.players.forEach((_player: TPlayer) => {
           if (_player.score <= 21) {
             potentialWinner = _player;
-          } else  {
+          } else {
             bustCounter++;
           }
         });
-        if (bustCounter === this.players.length - 1 ) {
+        if (bustCounter === this.players.length - 1) {
           this._finishGame(potentialWinner);
         }
       }
@@ -239,7 +248,7 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
     this.players.forEach((player: TPlayer) => {
       player.isFinished = true;
       this._myService.updatePlayer(player, this._myService.roomId);
-     });
+    });
   }
 
   private _writeMessage(message: string): void {
