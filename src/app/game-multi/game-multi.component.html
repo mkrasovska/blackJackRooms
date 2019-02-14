@@ -1,25 +1,36 @@
-<button type="submit" (click)=addRoom(roomName.value,+maxPlayers.value)>
-  Add room
-</button>
-<input #roomName placeholder="room name">
+<div class=main-container>
+<div class=add-room-controls>
+  <button type="submit"
+    (click)=addRoom(roomName.value,+maxPlayers.value)>
+    Add room
+  </button>
 
-<input #maxPlayers placeholder="max players">
+  <input #roomName
+    placeholder="room name">
 
-<p>Select existing room</p>
+  <input #maxPlayers
+    type=number
+    class=number-of-players
+    placeholder="max players">
+</div>
+
 <div class="existing-rooms">
 
 <div class="room"
   *ngFor="let room of rooms">
-  {{room.id}}
-  {{room.name}}
-  Counter: {{room.counter}}
+  <p>{{room.id}}
+  {{room.name}}</p>
+  <p>Counter: {{room.counter}} of {{room.maxPlayers}}</p>
 
-  <a class="menu-button" [routerLink]="['/playroom', room.id]"> Enter room {{room.id}}</a>
+  <a class="menu-button" [routerLink]="['/playroom', room.id]"> Enter room </a>
 
   <button (click)="deleteRoom(room.id)"
+  class="menu-button"
    [disabled]="room.players" >
     Delete
   </button>
+</div>
+
 </div>
 
 </div>

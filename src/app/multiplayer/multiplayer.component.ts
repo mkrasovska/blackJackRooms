@@ -12,7 +12,7 @@ import { takeUntil, take } from 'rxjs/operators';
 })
 export class MultiplayerComponent implements OnInit, OnDestroy {
   public thisRoom: TRoom;
-  public players: TPlayer[] = this.createPlayers(1, 1);
+  public players: TPlayer[] = [];
   public gameInProgress: boolean = false;
   public allMessages: string[] = [];
   public messageText: string;
@@ -45,25 +45,26 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
       .subscribe((room: TRoom) => {
         this.thisRoom = room;
         this._myDeck = room.deck;
+        this.gameInProgress = this.thisRoom.gameInProgress;
         this.allMessages = room.messages ? room.messages : [];
         if (room.players) {
           this.players = Object.values(room.players);
           this.playersObj = room.players;
         }
-        this.gameInProgress = this.players
-          ? Object.keys(this.players).length === this.thisRoom.maxPlayers &&
-            this.players.every((player: TPlayer) => player.ready) &&
-            !this.players.every((player: TPlayer) => player.isFinished)
-          : false;
-        if (
-          this.gameInProgress &&
-          this.players &&
-          this.players.every((player: TPlayer) => player.score === 0)
-        ) {
-          this.players[0].isMyTurn = true;
-          this._myService.updatePlayer(this.players[0], this.thisRoom.id);
-        }
-        this._myService.changeInProgress(this.gameInProgress, this._myService.roomId);
+        // this.gameInProgress = this.players
+        //   ? Object.keys(this.players).length === this.thisRoom.maxPlayers &&
+        //     this.players.every((player: TPlayer) => player.ready) &&
+        //     !this.players.every((player: TPlayer) => player.isFinished)
+        //   : false;
+        // if (
+        //   this.gameInProgress &&
+        //   this.players &&
+        //   this.players.every((player: TPlayer) => player.score === 0)
+        // ) {
+        //   this.players[0].isMyTurn = true;
+        //   this._myService.updatePlayer(this.players[0], this.thisRoom.id);
+        // }
+        // this._myService.changeInProgress(this.gameInProgress, this._myService.roomId);
         this.myIndex = this.players.findIndex(
           (player: TPlayer) => player.id === this._myService.blackJackData.userId
         );
@@ -75,52 +76,36 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
     this._destroy$$.next();
   }
 
-  public Player(isBot: boolean, id: number): TPlayer {
-    const player: TPlayer = {
-      name: isBot ? this._myService.randomNick() : this._myService.blackJackData.userName,
-      isBot,
-      id: isBot ? id + 500000 : id,
-      isWinner: false,
-      isFinished: false,
-      score: 0,
-      cards: [],
-      ready: isBot ? true : false,
-      isMyTurn: false
-    };
-    return player;
+
+  public createBots(botsNumber: number): TPlayer[] {
+    const bots: TPlayer[] = [];
+    let id: number  = this._myService.getRandom();
+    for (let i: number = 0; i < botsNumber; i++, id += 100000) {
+      const newBot: TPlayer = this._myService.createPlayer(this._myService.randomNick(), true, id);
+      bots.push(newBot);
+    }
+    return bots;
   }
 
-  public createPlayers(playersNumber: number, humansNumber: number): TPlayer[] {
-    const players: TPlayer[] = [];
-    let id: number = this._myService.blackJackData.userId;
-    // let botId: number = id + 500000;
-    for (let i: number = 0; i < playersNumber; i++, id += 100000) {
-      const isBot: boolean = i < humansNumber ? false : true;
-      const newPlayer: TPlayer = this.Player(isBot, id);
-      players.push(newPlayer);
-    }
-    return players;
-  }
-
-  public blackJackInit(numberOfBots: number): void {
-    if (numberOfBots) {
-      this.addBots(numberOfBots);
-    }
+  public blackJackInit(): void {
+    // if (numberOfBots) {
+    //   this.addBots(numberOfBots);
+    // }
     this._myService.changeMaxPlayers(this.players.length, this.thisRoom.id);
     this.startNewGame();
   }
 
-  public addBots(numberOfBots: number): TPlayer[] {
-    const bots: TPlayer[] = this.createPlayers(numberOfBots, 0);
-    bots.forEach((bot: TPlayer) => {
-      this._myService.updatePlayer(bot, this.thisRoom.id);
-      this.players.push(bot);
-    });
-    return bots;
-  }
+  // public addBots(numberOfBots: number): TPlayer[] {
+  //   const bots: TPlayer[] = this.createBots(numberOfBots);
+  //   bots.forEach((bot: TPlayer) => {
+  //     this._myService.updatePlayer(bot, this.thisRoom.id);
+  //     this.players.push(bot);
+  //   });
+  //   return bots;
+  // }
 
   public startNewGame(): void {
-    this.allMessages = [];
+    this._myService.changeInProgress(true, this._myService.roomId);
     this._myDeck = this._myService.shuffleDeck(this._newDeck);
     this._clearBoard();
     this.players.forEach((player: TPlayer) => {
@@ -129,9 +114,7 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
       player.isWinner = false;
       player.score = 0;
       player.isMyTurn = false;
-      if (player.id === this._myService.blackJackData.userId) {
-        player.ready = true;
-      }
+      player.ready = true;
     });
 
     this.players[0].isMyTurn = true;
@@ -214,9 +197,6 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
         });
         if (bustCounter === this.players.length - 1 ) {
           this._finishGame(potentialWinner);
-          // potentialWinner.isWinner = true;
-          // potentialWinner.isFinished = true;
-          // this._writeMessage(`${potentialWinner.name} has won! Cheers!`);
         }
       }
 
@@ -229,12 +209,11 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
 
     if (this.players.every((_player: TPlayer) => _player.isFinished)) {
       const winner: TPlayer = this._myService.evaluateWinner(this.players);
+      this._myService.changeInProgress(false, this._myService.roomId);
       this._writeMessage(`${winner.name} has won`);
-      // if (this.thisRoom.masterId === this._myService.blackJackData.userId) {
       this._myService.updateRecords(this.players, this.records);
       console.log(`update`);
       console.log(this.records);
-      // }
     }
   }
 

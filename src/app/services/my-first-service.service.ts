@@ -6,18 +6,15 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class MyFirstServiceService {
-  public randomUserNumber: number = this.getRandom();
 
-  public blackJackData: TLocalData = this.getMyData() || {
+  public randomUserData: TLocalData = {
     userName: this.randomNickHuman(),
-    userId: this.randomUserNumber
+    userId: this.getRandom()
   };
+  // public randomUserNumber: number = this.getRandom();
+
+  public blackJackData: TLocalData = this.getMyData() || this.randomUserData;
   public roomId: number = 0;
-  // public myBotsId: number[] = [
-  //   this.blackJackData.userId + 100000,
-  //   this.blackJackData.userId + 200000,
-  //   this.blackJackData.userId + 300000
-  // ];
 
   public constructor(public db: AngularFireDatabase) {}
 
@@ -57,7 +54,7 @@ export class MyFirstServiceService {
     this.db.object('/rooms/room' + roomId + `/players/${player.id}`).update(player);
   }
 
-  public Player(name: string, isBot: boolean, id: number): TPlayer {
+  public createPlayer(name: string, isBot: boolean, id: number): TPlayer {
     const player: TPlayer = {
       name,
       isBot,
@@ -74,12 +71,12 @@ export class MyFirstServiceService {
 
   public randomNick(): string {
     const nicks: string[] = ['Крот', 'Бот', 'Кот'];
-    const character: string[] = ['Жёваный', 'Нёжеваный', 'Недожёваный', 'Просто'];
+    const character: string[] = ['Жёваный', 'Нежёваный', 'Недожёваный'];
     const nickNames: string[] = [];
     nicks.forEach((name: string) => {
       character.forEach((char: string) => {
         nickNames.push(`${char} ${name}`);
-       });
+      });
     });
     const randomName: string = nickNames[Math.ceil(Math.random() * nickNames.length)];
     // console.log(nickNames);
@@ -87,7 +84,14 @@ export class MyFirstServiceService {
   }
 
   public randomNickHuman(): string {
-    const nickNames: string[] = ['Штирлиц', 'Бабайка', 'Балалайка', 'Cool Hacker', 'Чиполино', 'Шапокляк'];
+    const nickNames: string[] = [
+      'Штирлиц',
+      'Бабайка',
+      'Балалайка',
+      'Cool Hacker',
+      'Чиполино',
+      'Шапокляк'
+    ];
     const randomName: string = nickNames[Math.ceil(Math.random() * nickNames.length)];
     return randomName;
   }
@@ -126,34 +130,36 @@ export class MyFirstServiceService {
   }
 
   public deleteEmptyRoom(players: TPlayer[], roomId: number): void {
-  if (players.every((player: TPlayer) => player.id === this.blackJackData.userId || player.isBot)) {
-    this.db.object('/rooms/room' + roomId).remove();
-   }
+    if (
+      players.every((player: TPlayer) => player.id === this.blackJackData.userId || player.isBot)
+    ) {
+      this.db.object('/rooms/room' + roomId).remove();
+    }
   }
 
   public updateRecords(players: TPlayer[], records: {}): void {
     players.forEach((player: TPlayer) => {
-     if (!player.isBot) {
-       records[player.id] = records[player.id]
-         ? {
-             victories: records[player.id].victories,
-             games: records[player.id].games + 1,
-             name: player.name,
-             id: player.id
-           }
-         : {
-             victories: 0,
-             games: 1,
-             name: player.name,
-           id: player.id
-           };
-    if (player.isWinner) {
-      records[player.id].victories++;
-    }
-    // console.log(records);
-       this.db.object(`/records`).update(records);
-    }
-   });
+      if (!player.isBot) {
+        records[player.id] = records[player.id]
+          ? {
+              victories: records[player.id].victories,
+              games: records[player.id].games + 1,
+              name: player.name,
+              id: player.id
+            }
+          : {
+              victories: 0,
+              games: 1,
+              name: player.name,
+              id: player.id
+            };
+        if (player.isWinner) {
+          records[player.id].victories++;
+        }
+        // console.log(records);
+        this.db.object(`/records`).update(records);
+      }
+    });
   }
 
   public scoreSum(player: TPlayer): number {
@@ -227,7 +233,7 @@ export class MyFirstServiceService {
       }
       win.isWinner = true;
       return win;
-    }, this.Player('', false, 1));
+    }, this.createPlayer('', false, 1));
 
     return winner;
   }

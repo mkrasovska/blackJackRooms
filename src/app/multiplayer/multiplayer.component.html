@@ -3,7 +3,7 @@
     [thisRoom]="thisRoom"
     [players]="players"
     [gameInProgress]="gameInProgress"
-    (gameStarted)="blackJackInit($event)">
+    (gameStarted)="blackJackInit()">
   </app-sidebar>
 
   <app-field (cardTaken)="nextRound()" [players]="players" [gameInProgress]="gameInProgress" (gameStopped)="stopGame()">

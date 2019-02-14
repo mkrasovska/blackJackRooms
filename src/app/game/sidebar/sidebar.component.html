@@ -11,23 +11,34 @@
   </a>
 
   <p *ngIf="!gameInProgress">
-    Players: {{players ? players.length : 0}}/{{thisRoom ? thisRoom.maxPlayers : 0}}
+    Players: {{players ? players.length : 0}} of {{thisRoom ? thisRoom.maxPlayers : 0}}
   </p>
 
   <div class="master-comtrols"
       *ngIf="thisRoom ? thisRoom.masterId === blackJackData.userId && !gameInProgress : false">
 
-  <p>
+  <button class="new-game"
+    *ngIf="thisRoom ? thisRoom.masterId === blackJackData.userId && !gameInProgress : false"
+    (click)="addBot()">
+    Add bot
+  </button>
+
+  <button class="new-game" *ngIf="thisRoom ? thisRoom.masterId === blackJackData.userId && !gameInProgress : false"
+    (click)="deleteBot()">
+    Delete bot
+  </button>
+
+  <!-- <p>
     Add
      <input class="bot-number"
       placeholder="0"
       #numberOfBots>
     bots
-  </p>
+  </p> -->
 
   <button class="new-game"
-   (click)="gameStarted.emit(numberOfBots.value); numberOfBots.value=''">
-    Start
+   (click)="gameStarted.emit()">
+    New game
   </button>
 </div>
 

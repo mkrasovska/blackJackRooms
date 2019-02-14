@@ -22,7 +22,7 @@ export class PlayroomComponent implements OnInit, OnDestroy {
   public mayIComeIn: boolean = false;
   private _destroy$$: Subject<void> = new Subject();
 
-  public newPlayer: TPlayer = this._myService.Player(
+  public newPlayer: TPlayer = this._myService.createPlayer(
     this.blackJackData.userName,
     false,
     this.blackJackData.userId
