@@ -215,8 +215,6 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
       this._myService.changeInProgress(false, this._myService.roomId);
       this._writeMessage(`${winner.name} has won`);
       this._myService.updateRecords(this.players, this.records);
-      console.log(`update`);
-      console.log(this.records);
     }
   }
 
