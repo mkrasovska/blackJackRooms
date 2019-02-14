@@ -14,19 +14,25 @@ export class SidebarComponent {
   @Input() public players: TPlayer[];
   @Input() public gameInProgress: boolean;
   @Input() public thisRoom: TRoom;
+  @Input() public blackJackData: TLocalData;
 
-  @Output() public gameStarted: EventEmitter<void> = new EventEmitter();
+  @Output()
+  public gameStarted: EventEmitter<void> = new EventEmitter();
 
-  public blackJackData: TLocalData = this._myService.blackJackData;
+  // public blackJackData: TLocalData = this._myService.blackJackData;
 
   constructor(private _myService: MyFirstServiceService) {}
 
   public addBot(): void {
-    const newBot: TPlayer = this._myService.createPlayer(this._myService.randomNick(), true, this._myService.getRandom() + 100000);
+    const newBot: TPlayer = this._myService.createPlayer(
+      this._myService.randomNick(),
+      true,
+      this._myService.getRandom() + 100000
+    );
     this.players.push(newBot);
     console.log(this.players);
     this._myService.updatePlayer(newBot, this.thisRoom.id);
- }
+  }
 
   public deleteBot(): void {
     if (this.players[this.players.length - 1].isBot) {

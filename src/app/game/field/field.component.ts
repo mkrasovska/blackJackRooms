@@ -14,9 +14,10 @@ export class FieldComponent implements OnInit, OnDestroy {
   @Output() public gameStopped: EventEmitter<void> = new EventEmitter();
   @Input() public gameInProgress: boolean;
   @Input() public players: TPlayer[];
+  @Input() public blackJackData: TLocalData;
 
   public subRoom: Subscription;
-  public blackJackData: TLocalData = this._myService.blackJackData;
+  // public blackJackData: TLocalData = this._myService.blackJackData;
   private _destroy$$: Subject<void> = new Subject();
   public isActive: boolean = false;
   public isMyTurn: boolean = false;
@@ -36,7 +37,7 @@ export class FieldComponent implements OnInit, OnDestroy {
           this.playersObj = room.players;
           // console.log(this.playersObj);
           this.isActive = this.players.every((player: TPlayer) => player.ready);
-          this.isMyTurn = this.playersObj[this._myService.blackJackData.userId].isMyTurn;
+          this.isMyTurn = this.playersObj[this.blackJackData.userId].isMyTurn;
           // console.log(this.isActive);
         }
       });

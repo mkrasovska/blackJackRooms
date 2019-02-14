@@ -90,7 +90,8 @@ export class MyFirstServiceService {
       'Балалайка',
       'Cool Hacker',
       'Чиполино',
-      'Шапокляк'
+      'Шапокляк',
+      'Сепулька'
     ];
     const randomName: string = nickNames[Math.ceil(Math.random() * nickNames.length)];
     return randomName;

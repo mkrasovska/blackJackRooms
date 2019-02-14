@@ -7,7 +7,7 @@ import { MyFirstServiceService } from './../services/my-first-service.service';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
-  public blackJackData = JSON.parse(localStorage.getItem('blackJackData')) || {};
+  public blackJackData: Partial<TLocalData> = this._myService.getMyData() || {};
   public userName: string = this.blackJackData.userName;
 
   public constructor(private _myService: MyFirstServiceService) {}

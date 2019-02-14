@@ -22,12 +22,13 @@ export class GameMultiComponent implements OnInit {
 
   public addRoom(roomName: number, maxPlayers: number): void {
     const roomId: number = new Date().getUTCMilliseconds();
+    const blackJackData: TLocalData = this._myService.getMyData() || this._myService.randomUserData;
     this.db.object('/rooms/room' + roomId).update({
       name: roomName,
       maxPlayers: maxPlayers || 2,
       id: roomId,
       // counter: 0,
-      masterId: this._myService.blackJackData.userId,
+      masterId: blackJackData.userId,
       deck: this._myService.createDeck(),
       players: {},
       gameInProgress: false

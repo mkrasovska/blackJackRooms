@@ -2,10 +2,15 @@
   <app-sidebar [allMessages]="allMessages"
     [thisRoom]="thisRoom"
     [players]="players"
+    [blackJackData]="blackJackData"
     [gameInProgress]="gameInProgress"
     (gameStarted)="blackJackInit()">
   </app-sidebar>
 
-  <app-field (cardTaken)="nextRound()" [players]="players" [gameInProgress]="gameInProgress" (gameStopped)="stopGame()">
+  <app-field (cardTaken)="nextRound()"
+    [blackJackData]="blackJackData"
+    [players]="players"
+    [gameInProgress]="gameInProgress"
+    (gameStopped)="stopGame()">
   </app-field>
 </div>

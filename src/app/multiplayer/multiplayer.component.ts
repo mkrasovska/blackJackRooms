@@ -20,6 +20,8 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
   public myIndex: number;
   public playersObj: {} = {};
   public records: {} = {};
+  public blackJackData: TLocalData = this._myService.getMyData() || this._myService.randomUserData;
+
   private _destroy$$: Subject<void> = new Subject();
 
   private _newDeck: TCard[] = this._myService.createDeck();
@@ -29,6 +31,7 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
 
   public ngOnInit() {
     this._myService.updateDeck(this._myDeck, this._myService.roomId);
+    this.blackJackData = this._myService.getMyData() || this._myService.randomUserData;
     // this.players.forEach((player: TPlayer) =>
     //   this._myService.updatePlayer(player, this._myService.roomId)
     // );
@@ -66,7 +69,7 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
         // }
         // this._myService.changeInProgress(this.gameInProgress, this._myService.roomId);
         this.myIndex = this.players.findIndex(
-          (player: TPlayer) => player.id === this._myService.blackJackData.userId
+          (player: TPlayer) => player.id === this.blackJackData.userId
         );
       });
   }
@@ -119,7 +122,7 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
 
     this.players[0].isMyTurn = true;
 
-    if (this._myService.blackJackData.userId === this.thisRoom.masterId) {
+    if (this.blackJackData.userId === this.thisRoom.masterId) {
       this.players.forEach((player: TPlayer) => {
         const takenCard: TCard = this._takeNewCard(player);
         // this._writeMessage(`${player.name} took ${takenCard.name} ${takenCard.symbol}`);
@@ -133,7 +136,7 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
 
   public stopGame(): void {
     if (!this.players[this.myIndex].isFinished) {
-      this._writeMessage(`${this._myService.blackJackData.userName} stopped the game`);
+      this._writeMessage(`${this.blackJackData.userName} stopped the game`);
     }
     this.players[this.myIndex].isFinished = true;
     this.nextRound();
@@ -248,7 +251,7 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
   }
 
   private _findNewMaster(room: TRoom): void {
-    if (room.masterId === this._myService.blackJackData.userId) {
+    if (room.masterId === this.blackJackData.userId) {
       let nextMasterIndex: number = this.findNextIndex(this.myIndex);
 
       while (this.players[nextMasterIndex].isBot) {

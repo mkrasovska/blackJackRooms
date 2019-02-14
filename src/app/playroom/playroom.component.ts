@@ -15,7 +15,7 @@ export class PlayroomComponent implements OnInit, OnDestroy {
   public id: number;
   // private sub: Subscription;
   public thisRoom: TRoom;
-  public blackJackData: TLocalData = this._myService.blackJackData;
+  public blackJackData: TLocalData = this._myService.getMyData() || this._myService.randomUserData;
   public players: {} = {};
   // public playersArr: TPlayer[] = [];
   public playerNumber: number = 0;
@@ -36,6 +36,7 @@ export class PlayroomComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    this.blackJackData = this._myService.getMyData() || this._myService.randomUserData;
     this.route.params
       .pipe(
         pluck('id'),
@@ -56,12 +57,12 @@ export class PlayroomComponent implements OnInit, OnDestroy {
           this.playerNumber = this.players ? Object.keys(this.players).length : 0;
         }),
         tap((room: TRoom) => {
-          if (room.gameInProgress && !room.players[this._myService.blackJackData.userId]) {
+          if (room.gameInProgress && !room.players[this.blackJackData.userId]) {
             this.router.navigate(['closed-room']);
           }
           if (
             room.maxPlayers <= this.playerNumber &&
-            !room.players[this._myService.blackJackData.userId]
+            !room.players[this.blackJackData.userId]
           ) {
             this.router.navigate(['closed-room']);
           }
@@ -69,17 +70,17 @@ export class PlayroomComponent implements OnInit, OnDestroy {
         filter(
           (room: TRoom) =>
             room.maxPlayers > this.playerNumber ||
-            !!room.players[this._myService.blackJackData.userId]
+            !!room.players[this.blackJackData.userId]
         ),
         filter(
           (room: TRoom) =>
-            !room.gameInProgress || !!room.players[this._myService.blackJackData.userId]
+            !room.gameInProgress || !!room.players[this.blackJackData.userId]
         ),
         tap(() => {
           this.mayIComeIn = true;
         }),
         filter((room: TRoom) => {
-          return room.players ? !room.players[this._myService.blackJackData.userId] : true;
+          return room.players ? !room.players[this.blackJackData.userId] : true;
         }),
         tap(() => {
           this._myService.updatePlayer(this.newPlayer, this._myService.roomId);
@@ -97,6 +98,5 @@ export class PlayroomComponent implements OnInit, OnDestroy {
       .remove();
 
     this._myService.deleteEmptyRoom(Object.values(this.players), this.thisRoom.id);
-
   }
 }

@@ -56,6 +56,7 @@
     </h2>
 
     <p *ngFor="let player of players"
+    [class.player-name]="player.isMyTurn && gameInProgress"
     [class.master]="thisRoom ? thisRoom.masterId === player.id : false"
     [class.is-finished]="player.isFinished && gameInProgress"
     [class.is-human]="!player.isBot"
