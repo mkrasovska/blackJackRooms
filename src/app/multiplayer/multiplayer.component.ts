@@ -221,9 +221,11 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
 
     if (this.players.every((_player: TPlayer) => _player.isFinished)) {
       const winner: TPlayer = this._myService.evaluateWinner(this.players);
+      winner.isWinner = true;
       this._myService.changeInProgress(false, this._myService.roomId);
       this._writeMessage(`${winner.name} has won`);
       this._myService.updateRecords(this.players, this.records);
+      this._myService.updatePlayer(player, this._myService.roomId);
     }
   }
 

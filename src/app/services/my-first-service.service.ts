@@ -230,9 +230,10 @@ export class MyFirstServiceService {
   public evaluateWinner(players: TPlayer[]): TPlayer {
     const winner: TPlayer = players.reduce((win: TPlayer, player: TPlayer) => {
       if (player.score > win.score && player.score <= 21) {
+      debugger;
         win = player;
       }
-      win.isWinner = true;
+      // win.isWinner = true;
       return win;
     }, this.createPlayer('', false, 1));
 
