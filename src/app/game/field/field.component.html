@@ -1,13 +1,13 @@
 <section class="game-field">
   <div class="decision-buttons">
-    <button class="next-card"
+    <button class="menu-button"
      *ngIf="gameInProgress"
      (click)="cardTaken.emit()"
      [disabled]="!isActive || !isMyTurn">
       Pick a card
     </button>
 
-    <button class="stop-game"
+    <button class="menu-button"
      *ngIf="gameInProgress"
      (click)="gameStopped.emit()"
      [disabled]="!isActive || !isMyTurn ">

@@ -1,35 +1,44 @@
 <div class=main-container>
-<div class=add-room-controls>
-  <button type="submit"
-    (click)=addRoom(roomName.value,+maxPlayers.value)>
-    Add room
-  </button>
+  <div class=add-room-controls>
+    <input #roomName placeholder="room name">
 
-  <input #roomName
-    placeholder="room name">
+    <input #maxPlayers type=number class=number-of-players placeholder="max players">
 
-  <input #maxPlayers
-    type=number
-    class=number-of-players
-    placeholder="max players">
-</div>
+    <button type="submit"
+      class="menu-button"
+      (click)=addRoom(roomName.value,+maxPlayers.value)>
+      New room
+    </button>
+    <button class="menu-button" (click)="router.navigate(['menu'])">Menu</button>
+  </div>
 
-<div class="existing-rooms">
+  <div class="existing-rooms">
 
-<div class="room"
-  *ngFor="let room of rooms">
-  <p>{{room.id}}
-  {{room.name}}</p>
-  <p>Counter: {{room.counter}} of {{room.maxPlayers}}</p>
+  <div class="room"
+    *ngFor="let room of rooms"
+    [class.hidden]="(room.maxPlayers === 1)">
+    <p>
+      {{room.id}}
+      {{room.name}}
+    </p>
 
-  <a class="menu-button" [routerLink]="['/playroom', room.id]"> Enter room </a>
+    <p>
+      Counter: {{room.counter}} of {{room.maxPlayers}}
+    </p>
 
-  <button (click)="deleteRoom(room.id)"
-  class="menu-button"
-   [disabled]="room.players" >
-    Delete
-  </button>
-</div>
+    <!-- <a class="menu-button"
+      [routerLink]="['/playroom', room.id]">
+      Enter room
+    </a> -->
+
+    <button class="menu-button" (click)="router.navigate(['/playroom', room.id])">Enter room</button>
+
+    <button (click)="deleteRoom(room.id)"
+      class="menu-button"
+      [disabled]="room.players" >
+      Delete
+    </button>
+  </div>
 
 </div>
 

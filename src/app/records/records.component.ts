@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MyFirstServiceService } from '../services/my-first-service.service';
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -13,7 +14,7 @@ export class RecordsComponent implements OnInit, OnDestroy {
   public records: {} = {};
   public recordsArr: TRecord[] = [];
   private _destroy$$: Subject<void> = new Subject();
-  constructor(private _myService: MyFirstServiceService) {}
+  constructor(private _myService: MyFirstServiceService, public router: Router) {}
 
   ngOnInit() {
     this._myService

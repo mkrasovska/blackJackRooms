@@ -7,7 +7,7 @@
     (gameStarted)="blackJackInit()">
   </app-sidebar>
 
-  <app-field (cardTaken)="nextRound()"
+  <app-field (cardTaken)="continueGame()"
     [blackJackData]="blackJackData"
     [players]="players"
     [gameInProgress]="gameInProgress"

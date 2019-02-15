@@ -1,12 +1,13 @@
 <main class="main-container">
-  <h1>Wellcome to Black Jack!</h1>
+  <h1>Wellcome to <br> Black Jack</h1>
 
-  <h2>Select your game</h2>
+  <div>
 
-  <a class="menu-button" routerLink="/game">Single player</a>
+  <button class="menu-button" (click)="addRoom('single',1)">Single Player</button>
 
-  <a class="menu-button" routerLink="/game-multi">Multi player</a>
+  <button class="menu-button" (click)="router.navigate(['game-multi'])">Multi player</button>
 
-  <a class="menu-button" routerLink="/hall-of-fame">Hall of Fame</a>
+  <button class="menu-button" (click)="router.navigate(['hall-of-fame'])">Hall of Fame</button>
 
-  </main>
+  </div>
+</main>

@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { AngularFireDatabase, AngularFireList } from 'angularfire2/database';
 import { Observable } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MyFirstServiceService {
-
   public randomUserData: TLocalData = {
     userName: this.randomNickHuman(),
     userId: this.getRandom()
@@ -16,7 +16,7 @@ export class MyFirstServiceService {
   public blackJackData: TLocalData = this.getMyData() || this.randomUserData;
   public roomId: number = 0;
 
-  public constructor(public db: AngularFireDatabase) {}
+  public constructor(public db: AngularFireDatabase, private router: Router) {}
 
   public getRoomData(): Observable<{}[]> {
     return this.db.list('rooms').valueChanges();
@@ -237,5 +237,29 @@ export class MyFirstServiceService {
     }, this.createPlayer('', false, 1));
 
     return winner;
+  }
+
+  public addRoom(roomName: string, maxPlayers: number): void {
+    const roomId: number = new Date().getUTCMilliseconds();
+    const blackJackData: TLocalData = this.getMyData() || this.randomUserData;
+    this.db.object('/rooms/room' + roomId).update({
+      name: roomName,
+      maxPlayers: maxPlayers || 2,
+      id: roomId,
+      masterId: blackJackData.userId,
+      deck: this.createDeck(),
+      players: {},
+      gameInProgress: false
+    });
+    this.router.navigate(['/playroom', roomId]);
+  }
+
+  public addBot(): void {
+    const newBot: TPlayer = this.createPlayer(
+      this.randomNick(),
+      true,
+      this.getRandom() + 100000
+    );
+    this.updatePlayer(newBot, this.roomId);
   }
 }

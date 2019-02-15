@@ -12,7 +12,7 @@ import { Router } from '@angular/router';
 export class GameMultiComponent implements OnInit {
   public rooms: TRoom[] = [];
   public roomCounter: number = 0;
-  public deleteIsDisables: boolean ;
+  public deleteIsDisables: boolean;
 
   public constructor(
     private _myService: MyFirstServiceService,
@@ -20,20 +20,24 @@ export class GameMultiComponent implements OnInit {
     private router: Router
   ) {}
 
-  public addRoom(roomName: number, maxPlayers: number): void {
-    const roomId: number = new Date().getUTCMilliseconds();
-    const blackJackData: TLocalData = this._myService.getMyData() || this._myService.randomUserData;
-    this.db.object('/rooms/room' + roomId).update({
-      name: roomName,
-      maxPlayers: maxPlayers || 2,
-      id: roomId,
-      // counter: 0,
-      masterId: blackJackData.userId,
-      deck: this._myService.createDeck(),
-      players: {},
-      gameInProgress: false
-    });
-    this.router.navigate(['/playroom', roomId]);
+  // public addRoom(roomName: string, maxPlayers: number): void {
+  //   const roomId: number = new Date().getUTCMilliseconds();
+  //   const blackJackData: TLocalData = this._myService.getMyData() || this._myService.randomUserData;
+  //   this.db.object('/rooms/room' + roomId).update({
+  //     name: roomName,
+  //     maxPlayers: maxPlayers || 2,
+  //     id: roomId,
+  //     // counter: 0,
+  //     masterId: blackJackData.userId,
+  //     deck: this._myService.createDeck(),
+  //     players: {},
+  //     gameInProgress: false
+  //   });
+  //   this.router.navigate(['/playroom', roomId]);
+  // }
+
+  public addRoom(roomName: string, maxPlayers: number): void {
+    this._myService.addRoom(roomName, maxPlayers);
   }
 
   public deleteRoom(roomId: number): void {
@@ -43,7 +47,9 @@ export class GameMultiComponent implements OnInit {
   ngOnInit() {
     this._myService.getRoomData().subscribe((rooms: TRoom[]) => {
       this.rooms = rooms;
-      this.rooms.forEach((myroom: TRoom) => {myroom.counter = myroom.players ? Object.keys(myroom.players).length : 0; });
+      this.rooms.forEach((myroom: TRoom) => {
+        myroom.counter = myroom.players ? Object.keys(myroom.players).length : 0;
+      });
     });
   }
 }

@@ -38,7 +38,7 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
     // );
     this._myService
       .getRecords()
-      .pipe(take(1))
+      .pipe(takeUntil(this._destroy$$))
       .subscribe((records: {}) => {
         this.records = records || {};
         console.log(`subscribe`);
@@ -96,7 +96,7 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
     // if (numberOfBots) {
     //   this.addBots(numberOfBots);
     // }
-    this._myService.changeMaxPlayers(this.players.length, this.thisRoom.id);
+    // this._myService.changeMaxPlayers(this.players.length, this.thisRoom.id);
     this.startNewGame();
   }
 
@@ -140,11 +140,11 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
   }
 
   public stopGame(): void {
-    if (!this.players[this.myIndex].isFinished) {
-      this._writeMessage(`${this.blackJackData.userName} stopped the game`);
-    }
+    // if (!this.players[this.myIndex].isFinished) {
+    //   this._writeMessage(`${this.blackJackData.userName} stopped the game`);
+    // }
     this.players[this.myIndex].isFinished = true;
-    this.nextRound();
+    this.continueGame();
   }
 
   public switchTurn(): number {
@@ -154,7 +154,7 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
       while (this.players[nextIndex].isFinished === true || this.players[nextIndex].isBot) {
         if (this.players[nextIndex].isBot) {
           this.nextTurn(this.players[nextIndex]);
-          this._myService.updatePlayer(this.players[nextIndex], this._myService.roomId);
+          // this._myService.updatePlayer(this.players[nextIndex], this._myService.roomId);
         }
         nextIndex = this.findNextIndex(nextIndex);
         if (nextIndex === this.myIndex && !this.players.some((player: TPlayer) => player.isBot && !player.isFinished)) {
@@ -168,7 +168,7 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
     return nextIndex;
   }
 
-  public nextRound(): void {
+  public continueGame(): void {
     this.nextTurn(this.players[this.myIndex]);
 
     const nextIndex: number = this.switchTurn();
@@ -184,7 +184,7 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
 
   public nextTurn(player: TPlayer): void {
     if (player.isBot && player.score >= 15 && !player.isFinished) {
-      this._writeMessage(`${player.name} stopped the game`);
+      // this._writeMessage(`${player.name} stopped the game`);
       player.isFinished = true;
     }
 

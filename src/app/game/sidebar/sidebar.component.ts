@@ -1,5 +1,6 @@
 import { Component, Input, EventEmitter, Output, OnInit, OnDestroy } from '@angular/core';
 import { MyFirstServiceService } from './../../services/my-first-service.service';
+import { Router } from '@angular/router';
 // import { Subject } from 'rxjs';
 // import { takeUntil } from 'rxjs/operators';
 
@@ -21,7 +22,7 @@ export class SidebarComponent {
 
   // public blackJackData: TLocalData = this._myService.blackJackData;
 
-  constructor(private _myService: MyFirstServiceService) {}
+  constructor(private _myService: MyFirstServiceService, public router: Router) {}
 
   public addBot(): void {
     const newBot: TPlayer = this._myService.createPlayer(
@@ -29,7 +30,7 @@ export class SidebarComponent {
       true,
       this._myService.getRandom() + 100000
     );
-    this.players.push(newBot);
+    // this.players.push(newBot);
     console.log(this.players);
     this._myService.updatePlayer(newBot, this.thisRoom.id);
   }

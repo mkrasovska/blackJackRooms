@@ -13,12 +13,12 @@ import { Router } from '@angular/router';
 })
 export class PlayroomComponent implements OnInit, OnDestroy {
   public id: number;
-  // private sub: Subscription;
   public thisRoom: TRoom;
   public blackJackData: TLocalData = this._myService.getMyData() || this._myService.randomUserData;
   public players: {} = {};
   // public playersArr: TPlayer[] = [];
   public playerNumber: number = 0;
+  // public humansNumber: number = 0;
   public mayIComeIn: boolean = false;
   private _destroy$$: Subject<void> = new Subject();
 
@@ -53,8 +53,10 @@ export class PlayroomComponent implements OnInit, OnDestroy {
         tap((room: TRoom) => {
           this.thisRoom = room;
           this.players = room.players;
-          // this.playersArr = room.players ? Object.values(room.players) : [];
           this.playerNumber = this.players ? Object.keys(this.players).length : 0;
+          // this.humansNumber = this.players
+          //   ? Object.keys(this.playersArr.filter((player: TPlayer) => player.isBot)).length
+          //   : 0;
         }),
         tap((room: TRoom) => {
           if (room.gameInProgress && !room.players[this.blackJackData.userId]) {
@@ -69,12 +71,10 @@ export class PlayroomComponent implements OnInit, OnDestroy {
         }),
         filter(
           (room: TRoom) =>
-            room.maxPlayers > this.playerNumber ||
-            !!room.players[this.blackJackData.userId]
+            room.maxPlayers > this.playerNumber || !!room.players[this.blackJackData.userId]
         ),
         filter(
-          (room: TRoom) =>
-            !room.gameInProgress || !!room.players[this.blackJackData.userId]
+          (room: TRoom) => !room.gameInProgress || !!room.players[this.blackJackData.userId]
         ),
         tap(() => {
           this.mayIComeIn = true;
@@ -82,8 +82,11 @@ export class PlayroomComponent implements OnInit, OnDestroy {
         filter((room: TRoom) => {
           return room.players ? !room.players[this.blackJackData.userId] : true;
         }),
-        tap(() => {
+        tap((room: TRoom) => {
           this._myService.updatePlayer(this.newPlayer, this._myService.roomId);
+          if (room.maxPlayers === 1) {
+            this._myService.addBot();
+          }
         }),
         takeUntil(this._destroy$$)
       )

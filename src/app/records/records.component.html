@@ -1,4 +1,4 @@
-<body>
+<main>
 <h1>
   Black Jack Hall of fame
 </h1>
@@ -6,6 +6,7 @@
 <table class=hall-of-fame>
   <thead>
     <tr>
+    <td>Rating</td>
     <td>ID</td>
     <td>Name</td>
     <td>Victories</td>
@@ -13,7 +14,8 @@
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let record of recordsArr">
+    <tr *ngFor="let record of recordsArr; let ind = index">
+      <td>{{ind + 1}}</td>
       <td>{{record.id}}</td>
       <td>{{record.name}}</td>
       <td>{{record.victories}}</td>
@@ -22,5 +24,7 @@
   </tbody>
 </table>
 
-</body>
+<button class="menu-button" (click)="router.navigate(['menu'])">Menu</button>
+
+</main>
 
