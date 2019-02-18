@@ -37,7 +37,7 @@ export class PlayroomComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     if (this._myService.getMyData())  {
-      this.blackJackData = this._myService.getMyData() 
+      this.blackJackData = this._myService.getMyData();
     } else {
       this.blackJackData = this._myService.randomUserData;
       const stringblackJackData: string = JSON.stringify(this.blackJackData);
@@ -53,6 +53,7 @@ export class PlayroomComponent implements OnInit, OnDestroy {
         tap((room: TRoom) => {
           if (!room) {
             this.router.navigate(['closed-room']);
+            console.log('noroom');
           }
         }),
         filter(Boolean),
@@ -106,6 +107,8 @@ export class PlayroomComponent implements OnInit, OnDestroy {
       .object('/rooms/room' + this._myService.roomId + `/players/${this.blackJackData.userId}`)
       .remove();
 
-    this._myService.deleteEmptyRoom(Object.values(this.players), this.thisRoom.id);
+    if (this.thisRoom) {
+      this._myService.deleteEmptyRoom(Object.values(this.players), this.thisRoom.id);
+    }
   }
 }

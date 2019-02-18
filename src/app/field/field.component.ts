@@ -1,5 +1,5 @@
 import { Component, Input, EventEmitter, Output, OnInit, OnDestroy } from '@angular/core';
-import { MyFirstServiceService } from './../../services/my-first-service.service';
+import { MyFirstServiceService } from './../services/my-first-service.service';
 import { Subscription, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
@@ -17,14 +17,13 @@ export class FieldComponent implements OnInit, OnDestroy {
   @Input() public blackJackData: TLocalData;
 
   public subRoom: Subscription;
-  // public blackJackData: TLocalData = this._myService.blackJackData;
   private _destroy$$: Subject<void> = new Subject();
   public isActive: boolean = false;
   public isMyTurn: boolean = false;
   public playersObj: {} = {};
   public thisRoom: {} = {};
 
-  constructor(private _myService: MyFirstServiceService) {}
+  public constructor(private _myService: MyFirstServiceService) {}
 
   ngOnInit() {
     this.subRoom = this._myService
@@ -35,10 +34,8 @@ export class FieldComponent implements OnInit, OnDestroy {
         if (room.players) {
           this.players = Object.values(room.players);
           this.playersObj = room.players;
-          // console.log(this.playersObj);
           this.isActive = this.players.every((player: TPlayer) => player.ready);
           this.isMyTurn = this.playersObj[this.blackJackData.userId].isMyTurn;
-          // console.log(this.isActive);
         }
       });
   }

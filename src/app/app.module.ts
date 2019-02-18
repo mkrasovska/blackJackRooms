@@ -11,17 +11,17 @@ import { appRoutes } from './routes';
 import { MyFirstServiceService } from './services/my-first-service.service';
 
 import { AppComponent } from './app.component';
-import { GameComponent } from './game/game.component';
+// import { GameComponent } from './game/game.component';
 import { MenuComponent } from './menu/menu.component';
-import { SidebarComponent } from './game/sidebar/sidebar.component';
-import { FieldComponent } from './game/field/field.component';
+import { SidebarComponent } from './sidebar/sidebar.component';
+import { FieldComponent } from './field/field.component';
 import { NotFoundPageComponent } from './not-found-page/not-found-page.component';
 import { GameMultiComponent } from './game-multi/game-multi.component';
 import { LoginComponent } from './login/login.component';
 import { PlayroomComponent } from './playroom/playroom.component';
 import { MultiplayerComponent } from './multiplayer/multiplayer.component';
 import { LoginGuardGuard } from './guards/login-guard.guard';
-import { RoomGuardGuard } from './guards/room-guard.guard';
+// import { RoomGuardGuard } from './guards/room-guard.guard';
 import { ClosedRoomComponent } from './closed-room/closed-room.component';
 import { RecordsComponent } from './records/records.component';
 
@@ -29,7 +29,7 @@ import { RecordsComponent } from './records/records.component';
 @NgModule({
   declarations: [
     AppComponent,
-    GameComponent,
+    // GameComponent,
     MenuComponent,
     SidebarComponent,
     FieldComponent,
@@ -48,7 +48,7 @@ import { RecordsComponent } from './records/records.component';
     AngularFireDatabaseModule,
     FormsModule
   ],
-  providers: [MyFirstServiceService, LoginGuardGuard, RoomGuardGuard],
+  providers: [MyFirstServiceService, LoginGuardGuard],
   bootstrap: [AppComponent]
 })
 export class AppModule {}

@@ -1,5 +1,5 @@
 import { Component, Input, EventEmitter, Output, OnInit, OnDestroy } from '@angular/core';
-import { MyFirstServiceService } from './../../services/my-first-service.service';
+import { MyFirstServiceService } from './../services/my-first-service.service';
 import { Router } from '@angular/router';
 // import { Subject } from 'rxjs';
 // import { takeUntil } from 'rxjs/operators';
