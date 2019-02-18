@@ -21,6 +21,7 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
   public playersObj: {} = {};
   public records: {} = {};
   public blackJackData: TLocalData = this._myService.getMyData() || this._myService.randomUserData;
+  public turnTimer;
 
   private _destroy$$: Subject<void> = new Subject();
 
@@ -130,7 +131,6 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
     if (this.blackJackData.userId === this.thisRoom.masterId) {
       this.players.forEach((player: TPlayer) => {
         const takenCard: TCard = this._takeNewCard(player);
-        // this._writeMessage(`${player.name} took ${takenCard.name} ${takenCard.symbol}`);
         this._myService.updatePlayer(player, this._myService.roomId);
       });
     }
@@ -147,8 +147,8 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
     this.continueGame();
   }
 
-  public switchTurn(): number {
-    let nextIndex: number = this.findNextIndex(this.myIndex);
+  public switchTurn(thisIndex): number {
+    let nextIndex: number = this.findNextIndex(thisIndex);
 
     if (!this.players.every((player: TPlayer) => player.isFinished)) {
       while (this.players[nextIndex].isFinished === true || this.players[nextIndex].isBot) {
@@ -157,21 +157,29 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
           // this._myService.updatePlayer(this.players[nextIndex], this._myService.roomId);
         }
         nextIndex = this.findNextIndex(nextIndex);
-        if (nextIndex === this.myIndex && !this.players.some((player: TPlayer) => player.isBot && !player.isFinished)) {
+        if (nextIndex === thisIndex && !this.players.some((player: TPlayer) => player.isBot && !player.isFinished)) {
           break;
         }
       }
     }
 
-    this.players[this.myIndex].isMyTurn = false;
+    this.players[thisIndex].isMyTurn = false;
     this.players[nextIndex].isMyTurn = true;
     return nextIndex;
   }
 
   public continueGame(): void {
+    debugger;
     this.nextTurn(this.players[this.myIndex]);
 
-    const nextIndex: number = this.switchTurn();
+    const nextIndex: number = this.switchTurn(this.myIndex);
+
+    clearTimeout(this.turnTimer);
+    this.turnTimer = setTimeout(() => {this.players[nextIndex].isFinished=true;
+    const nextNextIndex = this.switchTurn(nextIndex);
+    this._myService.updatePlayer(this.players[nextIndex], this._myService.roomId);
+    this._myService.updatePlayer(this.players[nextNextIndex], this._myService.roomId);
+    }, 20000);
 
     this._myService.updateDeck(this._myDeck, this._myService.roomId);
     this._myService.updatePlayer(this.players[this.myIndex], this._myService.roomId);
@@ -197,7 +205,7 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
 
       if (player.score > 21) {
         player.isFinished = true;
-        this._writeMessage(`${player.name} has too much! Looser!`);
+        // this._writeMessage(`${player.name} has too much! Looser!`);
         let bustCounter: number = 0;
         let potentialWinner: TPlayer;
         this.players.forEach((_player: TPlayer) => {
@@ -220,10 +228,13 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
     this._myService.updatePlayer(player, this._myService.roomId);
 
     if (this.players.every((_player: TPlayer) => _player.isFinished)) {
-      const winner: TPlayer = this._myService.evaluateWinner(this.players);
-      winner.isWinner = true;
+      const winners: TPlayer[] = this._myService.evaluateWinner(this.players);
+      clearTimeout(this.turnTimer);
+      winners.forEach((winner: TPlayer) => {winner.isWinner = true;
+      //  this._writeMessage(`${winner.name} has won`);
+       this._myService.updatePlayer(winner, this._myService.roomId);
+      });
       this._myService.changeInProgress(false, this._myService.roomId);
-      this._writeMessage(`${winner.name} has won`);
       this._myService.updateRecords(this.players, this.records);
       this._myService.updatePlayer(player, this._myService.roomId);
     }

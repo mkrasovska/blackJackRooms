@@ -77,8 +77,8 @@ export class GameComponent {
     });
     if (this.players.every((player: TPlayer) => player.isFinished)) {
       if (!this.players.some((player: TPlayer) => player.isWinner)) {
-        const winner: TPlayer = this._myService.evaluateWinner(this.players);
-        this._writeMessage(`${winner.name} has won`);
+        const winners: TPlayer[] = this._myService.evaluateWinner(this.players);
+        // this._writeMessage(`${winner.name} has won`);
       }
       this._showNewGameButton();
     }

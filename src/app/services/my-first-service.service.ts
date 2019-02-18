@@ -37,6 +37,7 @@ export class MyFirstServiceService {
   public removePlayer(playerId: number, roomId: number): void {
     this.db.object('/rooms/room' + roomId + `/players/${playerId}`).remove();
   }
+
   public changeInProgress(gameInProgress: boolean, roomId: number): void {
     this.db.object('/rooms/room' + roomId + `/gameInProgress`).set(gameInProgress);
   }
@@ -227,17 +228,21 @@ export class MyFirstServiceService {
     return myDeck;
   }
 
-  public evaluateWinner(players: TPlayer[]): TPlayer {
+  public evaluateWinner(players: TPlayer[]): TPlayer[] {
     const winner: TPlayer = players.reduce((win: TPlayer, player: TPlayer) => {
       if (player.score > win.score && player.score <= 21) {
-      debugger;
         win = player;
       }
       // win.isWinner = true;
       return win;
     }, this.createPlayer('', false, 1));
-
-    return winner;
+    let winners = [winner];
+    players.forEach((player) => {
+      if (player.score === winner.score) {
+        winners.push(player);
+      }
+    })
+    return winners;
   }
 
   public addRoom(roomName: string, maxPlayers: number): void {

@@ -28,19 +28,10 @@
   align-items: center;
 }
 
-.decision-buttons {
+/* .decision-buttons {
   display: flex;
   flex-direction: row;
   align-items: center;
-}
-
-/* .next-card,
-.stop-game {
-  width: 150px;
-  height: 30px;
-  margin: 10px;
-  border-radius: 20px;
-  background-color: rgb(73, 128, 223);
 } */
 
 .menu-button {
@@ -64,6 +55,7 @@
 
 .menu-button:hover {
   background-color: #6FC6FF;
+  cursor: pointer;
 }
 
 .next-card:hover,

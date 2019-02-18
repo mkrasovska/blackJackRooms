@@ -23,8 +23,9 @@
 <div *ngIf="userName" class=enter-username>
   <a class="menu-button"
    routerLink="/menu">
-   To menu
+   Menu
   </a>
+  <button class="menu-button" (click)="userName=''">Change name</button>
 </div>
 </div>
 </main>

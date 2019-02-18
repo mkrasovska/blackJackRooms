@@ -1,4 +1,5 @@
 <div class=main-container>
+  <div class = "room-controls">
   <div class=add-room-controls>
     <input #roomName placeholder="room name">
 
@@ -9,37 +10,90 @@
       (click)=addRoom(roomName.value,+maxPlayers.value)>
       New room
     </button>
-    <button class="menu-button" (click)="router.navigate(['menu'])">Menu</button>
+   </div>
+
+  <div class=search-room-controls>
+      <input #searchQuery placeholder="Enter query">
+
+      <button type="submit"
+        class="menu-button"
+        (click)=searchByQuery(searchQuery.value);>
+        Search
+      </button>
+
+      <button type="submit" class="menu-button" (click)="searchQuery.value=''">
+        Clear
+      </button>
+
+    </div>
   </div>
 
-  <div class="existing-rooms">
+  <button class="menu-button" (click)="router.navigate(['menu'])">Menu</button>
+
+  <div *ngIf="!searchQuery.value" class="existing-rooms">
 
   <div class="room"
     *ngFor="let room of rooms"
+    [class.closed-room]="(room.counter >= room.maxPlayers || room.gameInProgress)"
     [class.hidden]="(room.maxPlayers === 1)">
-    <p>
+    <div class=room-id>
       {{room.id}}
+    </div>
+
+    <div>
       {{room.name}}
-    </p>
+    </div>
 
     <p>
-      Counter: {{room.counter}} of {{room.maxPlayers}}
+      Players: {{room.counter}} of {{room.maxPlayers}}
     </p>
 
-    <!-- <a class="menu-button"
-      [routerLink]="['/playroom', room.id]">
+    <button class="menu-button"
+      [disabled]="room.counter >= room.maxPlayers || room.gameInProgress === true"
+      (click)="router.navigate(['/playroom', room.id])">
       Enter room
-    </a> -->
+    </button>
 
-    <button class="menu-button" (click)="router.navigate(['/playroom', room.id])">Enter room</button>
-
-    <button (click)="deleteRoom(room.id)"
+    <!-- <button (click)="deleteRoom(room.id)"
       class="menu-button"
       [disabled]="room.players" >
       Delete
-    </button>
+    </button> -->
   </div>
 
 </div>
+
+<div *ngIf="searchQuery.value" class="filtered-rooms">
+
+    <div class="room"
+      *ngFor="let room of roomsFiltered"
+      [class.closed-room]="(room.counter >= room.maxPlayers || room.gameInProgress)"
+      [class.hidden]="(room.maxPlayers === 1)">
+      <div class=room-id>
+        {{room.id}}
+      </div>
+
+      <div>
+        {{room.name}}
+      </div>
+
+      <p>
+        Players: {{room.counter}} of {{room.maxPlayers}}
+      </p>
+
+      <button class="menu-button"
+        [disabled]="room.counter >= room.maxPlayers || room.gameInProgress === true"
+        (click)="router.navigate(['/playroom', room.id])">
+        Enter room
+      </button>
+
+      <!-- <button (click)="deleteRoom(room.id)"
+        class="menu-button"
+        [disabled]="room.players" >
+        Delete
+      </button> -->
+    </div>
+
+  </div>
 
 </div>

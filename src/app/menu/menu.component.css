@@ -21,6 +21,11 @@ h1 {
   font-weight: bold;
 }
 
+h1:hover {
+  color: black;
+  transition: 3s;
+} 
+
 .menu-button {
   border-radius: 5px;
   border: none;
@@ -34,17 +39,6 @@ h1 {
   background-color: #55acee;
   box-shadow: 0px 5px 0px 0px #3C93D5;
 
-
-  /* border: 1px solid gray;
-  border-radius: 2px;
-  display: inline-block;
-  width: 150px;
-  height: 40px;
-  background-color: rgb(73, 128, 223);
-  color: black;
-  font-weight: 600;
-  font-size: 18px; */
-
 }
 
 .menu-button:not(:last-child) {
@@ -53,4 +47,5 @@ h1 {
 
   .menu-button:hover {
     background-color: #6FC6FF;
+    cursor: pointer;
   }

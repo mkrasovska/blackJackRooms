@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MyFirstServiceService } from './../services/my-first-service.service';
+import { FormGroup, FormBuilder } from '@angular/forms';
 
 @Component({
   selector: 'app-login',
@@ -9,6 +10,8 @@ import { MyFirstServiceService } from './../services/my-first-service.service';
 export class LoginComponent implements OnInit {
   public blackJackData: Partial<TLocalData> = this._myService.getMyData() || {};
   public userName: string = this.blackJackData.userName;
+  // public userForm: FormGroup;
+
 
   public constructor(private _myService: MyFirstServiceService) {}
 
@@ -24,5 +27,6 @@ export class LoginComponent implements OnInit {
     localStorage.setItem('blackJackData', stringblackJackData);
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+  }
 }

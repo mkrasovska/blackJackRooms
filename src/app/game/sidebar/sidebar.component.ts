@@ -25,14 +25,32 @@ export class SidebarComponent {
   constructor(private _myService: MyFirstServiceService, public router: Router) {}
 
   public addBot(): void {
-    const newBot: TPlayer = this._myService.createPlayer(
-      this._myService.randomNick(),
-      true,
-      this._myService.getRandom() + 100000
-    );
-    // this.players.push(newBot);
-    console.log(this.players);
-    this._myService.updatePlayer(newBot, this.thisRoom.id);
+    if (this.players.length >= this.thisRoom.maxPlayers) {
+      alert(`Maximum allowed number of players in this room is ${this.thisRoom.maxPlayers}`);
+      return;
+    } else {
+      this._myService.addBot();
+    }
+  }
+
+  public increaseRoom(): void {
+    if (this.thisRoom.maxPlayers >= 6) {
+      alert('Room capacity should not exced 6 players');
+      return;
+    } else {
+    this.thisRoom.maxPlayers++;
+    this._myService.changeMaxPlayers(this.thisRoom.maxPlayers, this.thisRoom.id);
+    }
+  }
+
+  public decreaseRoom(): void {
+    if (this.thisRoom.maxPlayers <= this.players.length) {
+      alert(`You cannot decrease room when it\'s full`);
+      return;
+    } else {
+      this.thisRoom.maxPlayers--;
+      this._myService.changeMaxPlayers(this.thisRoom.maxPlayers, this.thisRoom.id);
+    }
   }
 
   public deleteBot(): void {

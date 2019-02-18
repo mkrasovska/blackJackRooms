@@ -19,6 +19,16 @@
   <div class="master-comtrols"
       *ngIf="thisRoom ? thisRoom.masterId === blackJackData.userId && !gameInProgress : false">
 
+    <button class="menu-button"
+      (click)="increaseRoom()">
+      Increase room
+    </button>
+
+    <button class="menu-button"
+      (click)="decreaseRoom()">
+      Decrease room
+    </button>
+
   <button class="menu-button"
     *ngIf="thisRoom ? thisRoom.masterId === blackJackData.userId && !gameInProgress : false"
     (click)="addBot()">

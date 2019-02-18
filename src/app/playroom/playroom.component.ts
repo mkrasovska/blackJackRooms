@@ -36,7 +36,13 @@ export class PlayroomComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.blackJackData = this._myService.getMyData() || this._myService.randomUserData;
+    if (this._myService.getMyData())  {
+      this.blackJackData = this._myService.getMyData() 
+    } else {
+      this.blackJackData = this._myService.randomUserData;
+      const stringblackJackData: string = JSON.stringify(this.blackJackData);
+      localStorage.setItem('blackJackData', stringblackJackData);
+    }
     this.route.params
       .pipe(
         pluck('id'),
