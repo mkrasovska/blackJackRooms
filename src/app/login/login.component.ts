@@ -10,18 +10,17 @@ import { FormGroup, FormBuilder } from '@angular/forms';
 export class LoginComponent implements OnInit {
   public blackJackData: Partial<TLocalData> = this._myService.getMyData() || {};
   public userName: string = this.blackJackData.userName;
-  // public userForm: FormGroup;
-
 
   public constructor(private _myService: MyFirstServiceService) {}
 
   public saveUserName(name: string): void {
-    console.log(name);
     const userId: number = new Date().getUTCMilliseconds();
     this.blackJackData.userName = name;
+
     if (!this.blackJackData.userId) {
       this.blackJackData.userId = userId;
     }
+
     this.userName = name;
     const stringblackJackData: string = JSON.stringify(this.blackJackData);
     localStorage.setItem('blackJackData', stringblackJackData);

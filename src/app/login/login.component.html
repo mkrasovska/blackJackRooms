@@ -1,31 +1,37 @@
 <main>
+  <div class=login-box>
 
-<div class=login-box>
-<p *ngIf="userName">
-  Hi {{userName}}!
-</p>
+    <p *ngIf="userName">
+      Hi {{userName}}!
+    </p>
 
-<p *ngIf="!userName">
-  Hi, unknown user!
-</p>
+    <p *ngIf="!userName">
+      Hi, unknown user!
+    </p>
 
-<div *ngIf="!userName"
-  class=enter-username>
-  <input placeholder="Please introduce yourself" #nameInput>
+    <div *ngIf="!userName"
+      class=enter-username>
 
-  <button type="submit"
-    (click)=saveUserName(nameInput.value)
-    class="menu-button">
-    Save
-  </button>
-</div>
+      <input placeholder="Please introduce yourself"
+        #nameInput>
 
-<div *ngIf="userName" class=enter-username>
-  <a class="menu-button"
-   routerLink="/menu">
-   Menu
-  </a>
-  <button class="menu-button" (click)="userName=''">Change name</button>
-</div>
-</div>
+      <button type="submit"
+        (click)=saveUserName(nameInput.value)
+        class="menu-button">
+        Save
+      </button>
+    </div>
+
+    <div *ngIf="userName" class=enter-username>
+      <a class="menu-button"
+        routerLink="/menu">
+        Menu
+      </a>
+
+      <button class="menu-button"
+        (click)="userName=''">
+        Change name
+      </button>
+    </div>
+  </div>
 </main>

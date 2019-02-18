@@ -61,9 +61,6 @@ export class GameMultiComponent implements OnInit {
       this.rooms = rooms;
       this.rooms.forEach((myroom: TRoom) => {
         myroom.counter = myroom.players ? Object.keys(myroom.players).length : 0;
-        // this.numberOfBots = myroom.players
-        //  ? Object.values(myroom.players).filter((player: TPlayer) => player.isBot).length : 0;
-        // this.numberOfHumans = myroom.counter - this.numberOfBots;
       });
     });
   }

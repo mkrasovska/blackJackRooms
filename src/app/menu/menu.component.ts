@@ -10,7 +10,6 @@ import { Router } from '@angular/router';
 export class MenuComponent {
 
   constructor(public _myService: MyFirstServiceService, public router: Router) {
-
   }
 
   public addRoom(roomName: string, maxPlayers: number): void {

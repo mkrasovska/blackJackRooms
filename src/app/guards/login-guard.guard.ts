@@ -14,6 +14,7 @@ export class LoginGuardGuard implements CanActivate {
   canActivate(
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
+
     if (this._myService.getMyData())  {
     return true;
     } else {
@@ -21,5 +22,4 @@ export class LoginGuardGuard implements CanActivate {
       return false;
     }
   }
-
 }

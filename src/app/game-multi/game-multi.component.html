@@ -62,8 +62,7 @@
     </div>
   </div>
 
-<div *ngIf="searchQuery.value" class="filtered-rooms">
-
+  <div *ngIf="searchQuery.value" class="filtered-rooms">
     <div class="room"
       *ngFor="let room of roomsFiltered"
       [class.closed-room]="(room.counter >= room.maxPlayers || room.gameInProgress)"
@@ -92,7 +91,5 @@
         Delete
       </button> -->
     </div>
-
   </div>
-
 </div>

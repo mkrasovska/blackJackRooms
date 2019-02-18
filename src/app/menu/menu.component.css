@@ -12,7 +12,6 @@
   background-repeat: no-repeat;
   background-size: 100%;
   text-align: center;
-  /* padding-top: 200px; */
 }
 
 h1 {
@@ -24,7 +23,7 @@ h1 {
 h1:hover {
   color: black;
   transition: 3s;
-} 
+}
 
 .menu-button {
   border-radius: 5px;
@@ -45,7 +44,7 @@ h1:hover {
   margin-right: 20px;
 }
 
-  .menu-button:hover {
-    background-color: #6FC6FF;
-    cursor: pointer;
-  }
+.menu-button:hover {
+  background-color: #6FC6FF;
+  cursor: pointer;
+}
