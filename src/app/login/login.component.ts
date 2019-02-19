@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { MyFirstServiceService } from './../services/my-first-service.service';
-import { FormGroup, FormBuilder } from '@angular/forms';
 
 @Component({
   selector: 'app-login',
@@ -26,6 +25,6 @@ export class LoginComponent implements OnInit {
     localStorage.setItem('blackJackData', stringblackJackData);
   }
 
-  ngOnInit() {
+  public ngOnInit(): void {
   }
 }

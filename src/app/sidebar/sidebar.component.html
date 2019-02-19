@@ -1,16 +1,8 @@
 <section class="side-bar">
-  <!-- <button class="new-game"
-   (click)="gameStarted.emit()"
-   *ngIf="!gameInProgress">
-    New game
-  </button> -->
-  <!-- <a class="go-to-menu"
-   routerLink="/menu"
-   *ngIf="!gameInProgress">
-   Menu
-  </a> -->
-
-  <button class="menu-button" (click)="router.navigate(['menu'])">Menu</button>
+  <button class="menu-button"
+    (click)="router.navigate(['menu'])">
+    Menu
+  </button>
 
   <p *ngIf="!gameInProgress">
     Players: {{players ? players.length : 0}} of {{thisRoom ? thisRoom.maxPlayers : 0}}
@@ -29,31 +21,23 @@
       Decrease room
     </button>
 
-  <button class="menu-button"
-    *ngIf="thisRoom ? thisRoom.masterId === blackJackData.userId && !gameInProgress : false"
-    (click)="addBot()">
-    Add bot
-  </button>
+    <button class="menu-button"
+      *ngIf="thisRoom ? thisRoom.masterId === blackJackData.userId && !gameInProgress : false"
+      (click)="addBot()">
+      Add bot
+    </button>
 
-  <button class="menu-button"
-    *ngIf="thisRoom ? thisRoom.masterId === blackJackData.userId && !gameInProgress : false"
-    (click)="deleteBot()">
-    Delete bot
-  </button>
+    <button class="menu-button"
+      *ngIf="thisRoom ? thisRoom.masterId === blackJackData.userId && !gameInProgress : false"
+      (click)="deleteBot()">
+      Delete bot
+    </button>
 
-  <!-- <p>
-    Add
-     <input class="bot-number"
-      placeholder="0"
-      #numberOfBots>
-    bots
-  </p> -->
-
-  <button class="menu-button"
-   (click)="gameStarted.emit()">
-    New game
-  </button>
-</div>
+    <button class="menu-button"
+      (click)="gameStarted.emit()">
+      Start game
+    </button>
+  </div>
 
   <div class="game-log">
     <p *ngFor="let message of allMessages">
@@ -69,29 +53,29 @@
     </h2>
 
     <p *ngFor="let player of players"
-    class="player-list"
-    [class.player-name]="player.isMyTurn && gameInProgress"
-    [class.master]="thisRoom ? thisRoom.masterId === player.id : false"
-    [class.is-human]="!player.isBot"
-    [class.is-bot]="player.isBot">
+      class="player-list"
+      [class.player-name]="player.isMyTurn && gameInProgress"
+      [class.master]="thisRoom ? thisRoom.masterId === player.id : false"
+      [class.is-human]="!player.isBot"
+      [class.is-bot]="player.isBot">
+      {{player.name}}
+      <span *ngIf="!gameInProgress">
+        : {{player.score}}
+      </span>
 
-    {{player.name}}
-    <span *ngIf="!gameInProgress">: {{player.score}}</span>
-    <span *ngIf="player.isFinished && gameInProgress && !(player.score > 21)">
-      <img  src="../../../assets/img/stop.png">
-    </span>
-    <span class="bust" *ngIf="player.score > 21">  BUST!!!</span>
-    <span class="winner" *ngIf="player.isWinner"> WINNER!!!</span>
+      <span *ngIf="player.isFinished && gameInProgress && !(player.score > 21)">
+        <img  src="../../../assets/img/stop.png">
+      </span>
+
+      <span class="bust"
+        *ngIf="player.score > 21">
+        BUST!!!
+      </span>
+
+      <span class="winner"
+        *ngIf="player.isWinner">
+        WINNER!!!
+      </span>
     </p>
-
   </div>
-
-  <!-- <div *ngIf="!gameInProgress" class="game-players">
-
-    <h2>Players</h2>
-
-    <p *ngFor="let player of players">{{player.name}}<span *ngIf="player.ready">: ready</span></p>
-
-  </div> -->
-
 </section>

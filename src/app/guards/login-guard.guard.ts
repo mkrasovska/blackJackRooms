@@ -9,9 +9,9 @@ import { MyFirstServiceService } from '../services/my-first-service.service';
 })
 export class LoginGuardGuard implements CanActivate {
 
-  constructor(private router: Router, private _myService: MyFirstServiceService) { }
+  public constructor(private router: Router, private _myService: MyFirstServiceService) { }
 
-  canActivate(
+  public canActivate(
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
 

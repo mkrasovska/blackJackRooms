@@ -20,9 +20,8 @@ export class SidebarComponent {
   @Output()
   public gameStarted: EventEmitter<void> = new EventEmitter();
 
-  // public blackJackData: TLocalData = this._myService.blackJackData;
 
-  constructor(private _myService: MyFirstServiceService, public router: Router) {}
+  public constructor(private _myService: MyFirstServiceService, public router: Router) {}
 
   public addBot(): void {
     if (this.players.length >= this.thisRoom.maxPlayers) {
@@ -56,7 +55,6 @@ export class SidebarComponent {
   public deleteBot(): void {
     if (this.players[this.players.length - 1].isBot) {
       const deletedBot: TPlayer = this.players.pop();
-      console.log(this.players);
       this._myService.removePlayer(deletedBot.id, this.thisRoom.id);
     }
   }

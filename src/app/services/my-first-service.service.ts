@@ -11,7 +11,6 @@ export class MyFirstServiceService {
     userName: this.randomNickHuman(),
     userId: this.getRandom()
   };
-  // public randomUserNumber: number = this.getRandom();
 
   public blackJackData: TLocalData = this.getMyData() || this.randomUserData;
   public roomId: number = 0;
@@ -51,7 +50,6 @@ export class MyFirstServiceService {
   }
 
   public updatePlayer(player: TPlayer, roomId: number): void {
-    // debugger;
     this.db.object('/rooms/room' + roomId + `/players/${player.id}`).update(player);
   }
 
@@ -80,7 +78,6 @@ export class MyFirstServiceService {
       });
     });
     const randomName: string = nickNames[Math.floor(Math.random() * nickNames.length)];
-    // console.log(nickNames);
     return randomName;
   }
 
@@ -97,27 +94,6 @@ export class MyFirstServiceService {
     const randomName: string = nickNames[Math.ceil(Math.random() * nickNames.length)];
     return randomName;
   }
-
-  // public nameGenerator(): string {
-  //   let nicks = ['крот', 'бот', 'кот'];
-  //   let character = ['жёваный', 'нёжеваный', 'недожёваный', 'просто'];
-  //   let nickNames = [];
-  //   nicks.forEach(name => {
-  //     character.forEach(char => { nickNames.push(`${char} ${name}`) });
-  //   });
-
-  //   (nickNames);
-  // }
-
-  // public updatePlayers(players: TPlayer[], roomId: number): void {
-  //   this.db.object('/rooms/room' + roomId + `/players`).update(players);
-  // }
-
-  // public sayReady(playerId: number, roomId: number): void {
-  //   let isReady = {[playerId] : true};
-  //   this.db.object('/rooms/room' + roomId + `/ready`).update(isReady);
-  //   console.log('updated');
-  // }
 
   public updateDeck(deck: TCard[], roomId: number): void {
     this.db.object('/rooms/room' + roomId + `/deck`).set(deck);
@@ -141,6 +117,7 @@ export class MyFirstServiceService {
 
   public updateRecords(players: TPlayer[], records: {}): void {
     players.forEach((player: TPlayer) => {
+
       if (!player.isBot) {
         records[player.id] = records[player.id]
           ? {
@@ -155,10 +132,11 @@ export class MyFirstServiceService {
               name: player.name,
               id: player.id
             };
+
         if (player.isWinner) {
           records[player.id].victories++;
         }
-        // console.log(records);
+
         this.db.object(`/records`).update(records);
       }
     });
@@ -176,6 +154,7 @@ export class MyFirstServiceService {
 
   public getMyData(): TLocalData {
     const blackJackData: TLocalData = JSON.parse(localStorage.getItem('blackJackData'));
+
     return blackJackData;
   }
 
@@ -230,18 +209,20 @@ export class MyFirstServiceService {
 
   public evaluateWinner(players: TPlayer[]): TPlayer[] {
     const winner: TPlayer = players.reduce((win: TPlayer, player: TPlayer) => {
+
       if (player.score > win.score && player.score <= 21) {
         win = player;
       }
-      // win.isWinner = true;
+
       return win;
     }, this.createPlayer('', false, 1));
-    let winners = [winner];
-    players.forEach((player) => {
+    const winners: TPlayer[] = [winner];
+    players.forEach((player: TPlayer) => {
       if (player.score === winner.score) {
         winners.push(player);
       }
-    })
+    });
+
     return winners;
   }
 

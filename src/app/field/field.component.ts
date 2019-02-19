@@ -25,7 +25,7 @@ export class FieldComponent implements OnInit, OnDestroy {
 
   public constructor(private _myService: MyFirstServiceService) {}
 
-  ngOnInit() {
+  public ngOnInit(): void {
     this.subRoom = this._myService
       .getThisRoomData(this._myService.roomId)
       .pipe(takeUntil(this._destroy$$))
@@ -40,7 +40,7 @@ export class FieldComponent implements OnInit, OnDestroy {
       });
   }
 
-  ngOnDestroy() {
+  public ngOnDestroy(): void {
     this._destroy$$.next();
   }
 }

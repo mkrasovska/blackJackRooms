@@ -28,7 +28,8 @@ type TRoom = {
   messages: string[]
   gameInProgress: boolean,
   maxPlayers: number,
-  masterId: number
+  masterId: number,
+  timerID?: number
 }
 
 type TLocalData = {

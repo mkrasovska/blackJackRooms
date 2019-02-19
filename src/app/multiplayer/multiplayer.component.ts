@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MyFirstServiceService } from './../services/my-first-service.service';
 import { Subscription, Subject } from 'rxjs';
-import { takeUntil, take } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-multiplayer',
@@ -19,7 +19,7 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
   public playersObj: {} = {};
   public records: {} = {};
   public blackJackData: TLocalData = this._myService.getMyData() || this._myService.randomUserData;
-  public turnTimer;
+  // public turnTimer;
 
   private _destroy$$: Subject<void> = new Subject();
 
@@ -27,7 +27,7 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
 
   public constructor(private _myService: MyFirstServiceService) {}
 
-  public ngOnInit() {
+  public ngOnInit(): void {
     this.blackJackData = this._myService.getMyData() || this._myService.randomUserData;
     this._myService
       .getRecords()
@@ -54,7 +54,7 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
       });
   }
 
-  ngOnDestroy() {
+  public ngOnDestroy(): void {
     this._findNewMaster(this.thisRoom);
     this._destroy$$.next();
   }
@@ -130,14 +130,13 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
 
     const nextIndex: number = this.switchTurn(this.myIndex);
 
-    clearTimeout(this.turnTimer);
-    this.turnTimer = setTimeout(() => {this.players[nextIndex].isFinished=true;
-    const nextNextIndex: number = this.switchTurn(nextIndex);
-    this._myService.updatePlayer(this.players[nextIndex], this._myService.roomId);
-    this._myService.updatePlayer(this.players[nextNextIndex], this._myService.roomId);
-    }, 20000);
+    // clearTimeout(this.turnTimer);
+    // this.turnTimer = setTimeout(() => {this.players[nextIndex].isFinished=true;
+    // const nextNextIndex: number = this.switchTurn(nextIndex);
+    // this._myService.updatePlayer(this.players[nextIndex], this._myService.roomId);
+    // this._myService.updatePlayer(this.players[nextNextIndex], this._myService.roomId);
+    // }, 60000);
 
-    this._myService.updateDeck(this._myDeck, this._myService.roomId);
     this._myService.updatePlayer(this.players[this.myIndex], this._myService.roomId);
     this._myService.updatePlayer(this.players[nextIndex], this._myService.roomId);
   }
@@ -179,10 +178,11 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
     }
 
     this._myService.updatePlayer(player, this._myService.roomId);
+    this._myService.updateDeck(this._myDeck, this._myService.roomId);
 
     if (this.players.every((_player: TPlayer) => _player.isFinished)) {
       const winners: TPlayer[] = this._myService.evaluateWinner(this.players);
-      clearTimeout(this.turnTimer);
+      // clearTimeout(this.turnTimer);
       winners.forEach((winner: TPlayer) => {winner.isWinner = true;
       this._myService.updatePlayer(winner, this._myService.roomId);
       });

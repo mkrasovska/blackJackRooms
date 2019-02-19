@@ -22,22 +22,6 @@ export class GameMultiComponent implements OnInit {
     private router: Router
   ) {}
 
-  // public addRoom(roomName: string, maxPlayers: number): void {
-  //   const roomId: number = new Date().getUTCMilliseconds();
-  //   const blackJackData: TLocalData = this._myService.getMyData() || this._myService.randomUserData;
-  //   this.db.object('/rooms/room' + roomId).update({
-  //     name: roomName,
-  //     maxPlayers: maxPlayers || 2,
-  //     id: roomId,
-  //     // counter: 0,
-  //     masterId: blackJackData.userId,
-  //     deck: this._myService.createDeck(),
-  //     players: {},
-  //     gameInProgress: false
-  //   });
-  //   this.router.navigate(['/playroom', roomId]);
-  // }
-
   public addRoom(roomName: string, maxPlayers: number): void {
     if (maxPlayers > 6 || maxPlayers < 1 || Math.floor(maxPlayers) !== maxPlayers) {
       alert('The number of players should be a an integer from 1 to 6');
@@ -56,7 +40,7 @@ export class GameMultiComponent implements OnInit {
    || Object.values(room.players).some((player: TPlayer) => player.name === searchQuery));
   }
 
-  ngOnInit() {
+  public ngOnInit(): void {
     this._myService.getRoomData().subscribe((rooms: TRoom[]) => {
       this.rooms = rooms;
       this.rooms.forEach((myroom: TRoom) => {
