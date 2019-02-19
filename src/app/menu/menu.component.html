@@ -5,10 +5,19 @@
   </h1>
 
   <div>
-    <button class="menu-button" (click)="addRoom('single',1)">Single Player</button>
+    <button class="menu-button"
+      (click)="addRoom('single',1)">
+      Single Player
+    </button>
 
-    <button class="menu-button" (click)="router.navigate(['game-multi'])">Multi player</button>
+    <button class="menu-button"
+      routerLink="/game-multi">
+      Multi player
+    </button>
 
-    <button class="menu-button" (click)="router.navigate(['hall-of-fame'])">Hall of Fame</button>
+    <button class="menu-button"
+      routerLink="/hall-of-fame">
+      Hall of Fame
+    </button>
   </div>
 </main>

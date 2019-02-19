@@ -30,7 +30,7 @@
   </div>
 
   <button class="menu-button"
-    (click)="router.navigate(['menu'])">
+    routerLink="/menu">
     Menu
   </button>
 
@@ -55,7 +55,7 @@
 
       <button class="menu-button"
         [disabled]="room.counter >= room.maxPlayers || room.gameInProgress === true"
-        (click)="router.navigate(['/playroom', room.id])">
+        [routerLink]="['/playroom', room.id]">
         Enter room
       </button>
 
@@ -81,7 +81,7 @@
 
       <button class="menu-button"
         [disabled]="room.counter >= room.maxPlayers || room.gameInProgress === true"
-        (click)="router.navigate(['/playroom', room.id])">
+        [routerLink]="['/playroom', room.id]">
         Enter room
       </button>
 

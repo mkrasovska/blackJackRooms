@@ -91,7 +91,7 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
 
     if (this.blackJackData.userId === this.thisRoom.masterId) {
       this.players.forEach((player: TPlayer) => {
-        const takenCard: TCard = this._takeNewCard(player);
+        this._takeNewCard(player);
         this._myService.updatePlayer(player, this._myService.roomId);
       });
     }
@@ -154,7 +154,7 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
       if (!player.cards) {
         player.cards = [];
       }
-      const takenCard: TCard = this._takeNewCard(player);
+      this._takeNewCard(player);
 
       if (player.score > 21) {
         player.isFinished = true;

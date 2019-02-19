@@ -1,9 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute, Params } from '@angular/router';
-import { AngularFireDatabase, AngularFireList } from 'angularfire2/database';
+import { ActivatedRoute } from '@angular/router';
+import { AngularFireDatabase } from 'angularfire2/database';
 import { MyFirstServiceService } from './../services/my-first-service.service';
 import { Subject } from 'rxjs';
-import { takeUntil, pluck, switchMap, tap, filter, map } from 'rxjs/operators';
+import { takeUntil, pluck, switchMap, tap, filter } from 'rxjs/operators';
 import { Router } from '@angular/router';
 
 @Component({

@@ -8,7 +8,6 @@ import { NotFoundPageComponent } from './not-found-page/not-found-page.component
 import { ClosedRoomComponent } from './closed-room/closed-room.component';
 import { LoginGuardGuard } from './guards/login-guard.guard';
 import { RecordsComponent } from './records/records.component';
-import { CanActivate } from '@angular/router/src/utils/preactivation';
 
 export const appRoutes: Routes = [
   {

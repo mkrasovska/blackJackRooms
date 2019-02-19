@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MyFirstServiceService } from './../services/my-first-service.service';
 import { AngularFireDatabase } from 'angularfire2/database';
-import { Router } from '@angular/router';
 
 
 @Component({
@@ -19,7 +18,6 @@ export class GameMultiComponent implements OnInit {
   public constructor(
     private _myService: MyFirstServiceService,
     public db: AngularFireDatabase,
-    private router: Router
   ) {}
 
   public addRoom(roomName: string, maxPlayers: number): void {
