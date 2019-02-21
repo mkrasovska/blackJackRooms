@@ -3,7 +3,10 @@
     <div class=add-room-controls>
       <input #roomName placeholder="room name">
 
-      <input #maxPlayers type=number class=number-of-players placeholder="max players">
+      <input #maxPlayers
+        type=number
+        class=number-of-players
+        placeholder="max players">
 
       <button type="submit"
         class="menu-button"
@@ -13,19 +16,11 @@
     </div>
 
     <div class=search-room-controls>
-      <input #searchQuery placeholder="Enter query">
+      <div>Enter room or player name/ID</div>
 
-      <button type="submit"
-        class="menu-button"
-        (click)=searchByQuery(searchQuery.value);>
-        Search
-      </button>
-
-      <button type="submit"
-        class="menu-button"
-        (click)="searchQuery.value=''">
-        Clear
-      </button>
+      <input [(ngModel)]="searchQuery"
+        (keyup)="searchByQuery(searchQuery)"
+        placeholder="Enter query">
     </div>
   </div>
 
@@ -34,39 +29,11 @@
     Menu
   </button>
 
-  <div *ngIf="!searchQuery.value"
-    class="existing-rooms">
-    <div class="room"
-      *ngFor="let room of rooms"
-      [class.closed-room]="(room.counter >= room.maxPlayers || room.gameInProgress)"
-      [class.hidden]="(room.maxPlayers === 1)">
-
-      <div class=room-id>
-        {{room.id}}
-      </div>
-
-      <div>
-        {{room.name}}
-      </div>
-
-      <p>
-        Players: {{room.counter}} of {{room.maxPlayers}}
-      </p>
-
-      <button class="menu-button"
-        [disabled]="room.counter >= room.maxPlayers || room.gameInProgress === true"
-        [routerLink]="['/playroom', room.id]">
-        Enter room
-      </button>
-
-    </div>
-  </div>
-
-  <div *ngIf="searchQuery.value" class="filtered-rooms">
+  <div class="filtered-rooms">
     <div class="room"
       *ngFor="let room of roomsFiltered"
-      [class.closed-room]="(room.counter >= room.maxPlayers || room.gameInProgress)"
-      [class.hidden]="(room.maxPlayers === 1)">
+      [class.closed-room]="isClosed(room)"
+      [class.hidden]="room.singleRoom">
       <div class=room-id>
         {{room.id}}
       </div>
@@ -80,7 +47,7 @@
       </p>
 
       <button class="menu-button"
-        [disabled]="room.counter >= room.maxPlayers || room.gameInProgress === true"
+        [disabled]="isClosed(room)"
         [routerLink]="['/playroom', room.id]">
         Enter room
       </button>

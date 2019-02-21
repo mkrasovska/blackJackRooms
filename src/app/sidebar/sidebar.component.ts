@@ -51,9 +51,14 @@ export class SidebarComponent {
   }
 
   public deleteBot(): void {
-    if (this.players[this.players.length - 1].isBot) {
-      const deletedBot: TPlayer = this.players.pop();
-      this._myService.removePlayer(deletedBot.id, this.thisRoom.id);
+    if (!this.players[this.players.length - 1].isBot) {
+      return;
     }
+    if (this.players.length === 2) {
+      alert('You are trying to kill the last opponent. Stop please!');
+      return;
+    }
+    const deletedBot: TPlayer = this.players.pop();
+   this._myService.removePlayer(deletedBot.id, this.thisRoom.id);
   }
 }

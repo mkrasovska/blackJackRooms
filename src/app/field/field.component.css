@@ -21,11 +21,18 @@
   height: 40px;
 }
 
-.player-field{
+.player-hand{
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+}
+
+.player-field{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  color: white;
 }
 
 .menu-button {

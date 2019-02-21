@@ -1,12 +1,11 @@
 import { Routes } from '@angular/router';
-// import { GameComponent } from './game/game.component';
 import { LoginComponent } from './login/login.component';
 import { GameMultiComponent } from './game-multi/game-multi.component';
 import { MenuComponent } from './menu/menu.component';
 import { PlayroomComponent } from './playroom/playroom.component';
 import { NotFoundPageComponent } from './not-found-page/not-found-page.component';
 import { ClosedRoomComponent } from './closed-room/closed-room.component';
-import { LoginGuardGuard } from './guards/login-guard.guard';
+import { LoginGuard } from './guards/login.guard';
 import { RecordsComponent } from './records/records.component';
 
 export const appRoutes: Routes = [
@@ -18,12 +17,12 @@ export const appRoutes: Routes = [
   {
     path: 'menu',
     component: MenuComponent,
-    canActivate: [LoginGuardGuard]
+    canActivate: [LoginGuard]
   },
   {
     path: 'hall-of-fame',
     component: RecordsComponent,
-    canActivate: [LoginGuardGuard]
+    canActivate: [LoginGuard]
   },
   {
     path: 'login',
@@ -32,7 +31,7 @@ export const appRoutes: Routes = [
   {
     path: 'game-multi',
     component: GameMultiComponent,
-    canActivate: [LoginGuardGuard]
+    canActivate: [LoginGuard]
   },
   {
     path: 'playroom/:id',

@@ -1,16 +1,11 @@
 <main>
   <div class=login-box>
-
-    <p *ngIf="userName">
-      Hi {{userName}}!
-    </p>
-
-    <p *ngIf="!userName">
+  <ng-container *ngIf="!userName">
+    <p >
       Hi, unknown user!
     </p>
 
-    <div *ngIf="!userName"
-      class=enter-username>
+    <div class=enter-username>
 
       <input placeholder="Please introduce yourself"
         #nameInput>
@@ -21,8 +16,14 @@
         Save
       </button>
     </div>
+  </ng-container>
 
-    <div *ngIf="userName" class=enter-username>
+  <ng-container *ngIf="userName">
+    <p *ngIf="userName">
+      Hi {{userName}}!
+    </p>
+
+    <div class=enter-username>
       <a class="menu-button"
         routerLink="/menu">
         Menu
@@ -33,5 +34,6 @@
         Change name
       </button>
     </div>
+  </ng-container>
   </div>
 </main>

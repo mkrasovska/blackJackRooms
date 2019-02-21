@@ -226,7 +226,7 @@ export class MyFirstServiceService {
     return winners;
   }
 
-  public addRoom(roomName: string, maxPlayers: number): void {
+  public addRoom(roomName: string, maxPlayers: number, singleRoom: boolean): void {
     const roomId: number = new Date().getUTCMilliseconds();
     const blackJackData: TLocalData = this.getMyData() || this.randomUserData;
     this.db.object('/rooms/room' + roomId).update({
@@ -236,7 +236,8 @@ export class MyFirstServiceService {
       masterId: blackJackData.userId,
       deck: this.createDeck(),
       players: {},
-      gameInProgress: false
+      gameInProgress: false,
+      singleRoom
     });
     this.router.navigate(['/playroom', roomId]);
   }

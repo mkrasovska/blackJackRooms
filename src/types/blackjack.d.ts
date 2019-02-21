@@ -29,7 +29,8 @@ type TRoom = {
   gameInProgress: boolean,
   maxPlayers: number,
   masterId: number,
-  timerID?: number
+  timerID?: number,
+  singleRoom?: boolean
 }
 
 type TLocalData = {

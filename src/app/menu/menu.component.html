@@ -1,4 +1,19 @@
 <main class="main-container">
+  <p>Hi,
+    <span *ngIf="!editName">
+      {{blackJackData.userName}}
+    </span>
+
+    <input [(ngModel)]="blackJackData.userName"
+      *ngIf="editName"
+      (keydown)=setNewName($event)>
+
+    <button class="change-name-button"
+      (click)="editName=!editName">
+      <img src="../../assets/img/pen1.png">
+    </button>
+  </p>
+
   <h1>Wellcome to
      <br>
      Black Jack

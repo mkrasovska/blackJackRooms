@@ -10,8 +10,8 @@ import { Router } from '@angular/router';
   styleUrls: ['./records.component.css']
 })
 export class RecordsComponent implements OnInit, OnDestroy {
-  public records: {} = {};
-  public recordsArr: TRecord[] = [];
+  // public records: {} = {};
+  public records: TRecord[] = [];
 
 
   private _destroy$$: Subject<void> = new Subject();
@@ -23,8 +23,8 @@ export class RecordsComponent implements OnInit, OnDestroy {
       .getRecords()
       .pipe(takeUntil(this._destroy$$))
       .subscribe((records: {}) => {
-        this.recordsArr = records ? Object.values(records) : [];
-        this.recordsArr.sort((a: TRecord, b: TRecord) => b.victories - a.victories);
+        this.records = records ? Object.values(records) : [];
+        this.records.sort((a: TRecord, b: TRecord) => b.victories - a.victories);
       });
   }
 

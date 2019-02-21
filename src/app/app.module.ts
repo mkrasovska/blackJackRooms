@@ -20,7 +20,7 @@ import { GameMultiComponent } from './game-multi/game-multi.component';
 import { LoginComponent } from './login/login.component';
 import { PlayroomComponent } from './playroom/playroom.component';
 import { MultiplayerComponent } from './multiplayer/multiplayer.component';
-import { LoginGuardGuard } from './guards/login-guard.guard';
+import { LoginGuard } from './guards/login.guard';
 // import { RoomGuardGuard } from './guards/room-guard.guard';
 import { ClosedRoomComponent } from './closed-room/closed-room.component';
 import { RecordsComponent } from './records/records.component';
@@ -48,7 +48,7 @@ import { RecordsComponent } from './records/records.component';
     AngularFireDatabaseModule,
     FormsModule
   ],
-  providers: [MyFirstServiceService, LoginGuardGuard],
+  providers: [MyFirstServiceService, LoginGuard],
   bootstrap: [AppComponent]
 })
 export class AppModule {}

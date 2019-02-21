@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { MyFirstServiceService } from './../services/my-first-service.service';
 import { Subscription, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -7,6 +7,7 @@ import { takeUntil } from 'rxjs/operators';
   selector: 'app-multiplayer',
   templateUrl: './multiplayer.component.html',
   styleUrls: ['./multiplayer.component.css']
+  // host: { 'window:beforeunload': 'doOnUnload' }
 })
 export class MultiplayerComponent implements OnInit, OnDestroy {
   public thisRoom: TRoom;
@@ -48,7 +49,7 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
           this.players = Object.values(room.players);
           this.playersObj = room.players;
         }
-          this.myIndex = this.players.findIndex(
+        this.myIndex = this.players.findIndex(
           (player: TPlayer) => player.id === this.blackJackData.userId
         );
       });
@@ -69,11 +70,16 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
     return bots;
   }
 
-  public blackJackInit(): void {
-    this.startNewGame();
-  }
+  // public blackJackInit(): void {
+  //   this.startNewGame();
+  // }
 
   public startNewGame(): void {
+    if (this.players.length <= 1) {
+      alert (`At least 2 players should be in the room to start the game.
+       Please wait for other players or add bots.`);
+       return;
+    }
     this._myService.changeInProgress(true, this._myService.roomId);
     this._myDeck = this._myService.shuffleDeck(this._myService.createDeck());
     this._myService.updateDeck(this._myDeck, this._myService.roomId);
@@ -114,7 +120,10 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
           this.nextTurn(this.players[nextIndex]);
         }
         nextIndex = this.findNextIndex(nextIndex);
-        if (nextIndex === thisIndex && !this.players.some((player: TPlayer) => player.isBot && !player.isFinished)) {
+        if (
+          nextIndex === thisIndex &&
+          !this.players.some((player: TPlayer) => player.isBot && !player.isFinished)
+        ) {
           break;
         }
       }
@@ -183,8 +192,9 @@ export class MultiplayerComponent implements OnInit, OnDestroy {
     if (this.players.every((_player: TPlayer) => _player.isFinished)) {
       const winners: TPlayer[] = this._myService.evaluateWinner(this.players);
       // clearTimeout(this.turnTimer);
-      winners.forEach((winner: TPlayer) => {winner.isWinner = true;
-      this._myService.updatePlayer(winner, this._myService.roomId);
+      winners.forEach((winner: TPlayer) => {
+        winner.isWinner = true;
+        this._myService.updatePlayer(winner, this._myService.roomId);
       });
 
       this._myService.changeInProgress(false, this._myService.roomId);

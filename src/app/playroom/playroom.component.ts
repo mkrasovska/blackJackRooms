@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AngularFireDatabase } from 'angularfire2/database';
 import { MyFirstServiceService } from './../services/my-first-service.service';
@@ -15,27 +15,25 @@ export class PlayroomComponent implements OnInit, OnDestroy {
   public id: number;
   public thisRoom: TRoom;
   public blackJackData: TLocalData = this._myService.getMyData() || this._myService.randomUserData;
-  public players: {} = {};
-  public playerNumber: number = 0;
+  public players: TPlayer[] = [];
+  // public playerNumber: number = 0;
   // public humansNumber: number = 0;
   public mayIComeIn: boolean = false;
   private _destroy$$: Subject<void> = new Subject();
-
-  public newPlayer: TPlayer = this._myService.createPlayer(
-    this.blackJackData.userName,
-    false,
-    this.blackJackData.userId
-  );
 
   public constructor(
     private route: ActivatedRoute,
     public db: AngularFireDatabase,
     private _myService: MyFirstServiceService,
     private router: Router
-  ) {}
+  ) {
+  }
+  // @HostListener('window:beforeunload') doOnUnload(): void {
+  //   alert('unload!');
+  // }
 
   public ngOnInit(): void {
-    if (this._myService.getMyData())  {
+    if (this._myService.getMyData()) {
       this.blackJackData = this._myService.getMyData();
     } else {
       this.blackJackData = this._myService.randomUserData;
@@ -57,8 +55,8 @@ export class PlayroomComponent implements OnInit, OnDestroy {
         filter(Boolean),
         tap((room: TRoom) => {
           this.thisRoom = room;
-          this.players = room.players;
-          this.playerNumber = this.players ? Object.keys(this.players).length : 0;
+          this.players = room.players ? Object.values(room.players) : [];
+          // this.playerNumber = this.players.length;
           // this.humansNumber = this.players
           //   ? Object.keys(this.playersArr.filter((player: TPlayer) => player.isBot)).length
           //   : 0;
@@ -68,18 +66,24 @@ export class PlayroomComponent implements OnInit, OnDestroy {
             this.router.navigate(['closed-room']);
           }
           if (
-            room.maxPlayers <= this.playerNumber &&
+            room.maxPlayers <= this.players.length &&
             !room.players[this.blackJackData.userId]
           ) {
+            this.router.navigate(['closed-room']);
+          }
+          if (room.singleRoom && room.masterId !== this.blackJackData.userId) {
             this.router.navigate(['closed-room']);
           }
         }),
         filter(
           (room: TRoom) =>
-            room.maxPlayers > this.playerNumber || !!room.players[this.blackJackData.userId]
+            room.maxPlayers > this.players.length || !!room.players[this.blackJackData.userId]
         ),
         filter(
           (room: TRoom) => !room.gameInProgress || !!room.players[this.blackJackData.userId]
+        ),
+        filter(
+          (room: TRoom) => !room.singleRoom || room.masterId === this.blackJackData.userId
         ),
         tap(() => {
           this.mayIComeIn = true;
@@ -88,8 +92,13 @@ export class PlayroomComponent implements OnInit, OnDestroy {
           return room.players ? !room.players[this.blackJackData.userId] : true;
         }),
         tap((room: TRoom) => {
-          this._myService.updatePlayer(this.newPlayer, this._myService.roomId);
-          if (room.maxPlayers === 1) {
+          const newPlayer: TPlayer = this._myService.createPlayer(
+            this.blackJackData.userName,
+            false,
+            this.blackJackData.userId
+          );
+          this._myService.updatePlayer(newPlayer, this._myService.roomId);
+          if (room.singleRoom) {
             this._myService.addBot();
           }
         }),
@@ -106,7 +115,7 @@ export class PlayroomComponent implements OnInit, OnDestroy {
       .remove();
 
     if (this.thisRoom) {
-      this._myService.deleteEmptyRoom(Object.values(this.players), this.thisRoom.id);
+      this._myService.deleteEmptyRoom(this.players, this.thisRoom.id);
     }
   }
 }
