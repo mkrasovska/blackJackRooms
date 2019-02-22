@@ -1,11 +1,13 @@
 import { Routes } from '@angular/router';
-import { LoginComponent } from './login/login.component';
-import { GameMultiComponent } from './game-multi/game-multi.component';
-import { MenuComponent } from './menu/menu.component';
-import { GameComponent } from './game/game.component';
-import { NotFoundPageComponent } from './not-found-page/not-found-page.component';
-import { ClosedRoomComponent } from './closed-room/closed-room.component';
+
 import { LoginGuard } from './guards/login.guard';
+
+import { ClosedRoomComponent } from './closed-room/closed-room.component';
+import { GameComponent } from './game/game.component';
+import { GameMultiComponent } from './game-multi/game-multi.component';
+import { LoginComponent } from './login/login.component';
+import { MenuComponent } from './menu/menu.component';
+import { NotFoundPageComponent } from './not-found-page/not-found-page.component';
 import { RecordsComponent } from './records/records.component';
 
 export const appRoutes: Routes = [

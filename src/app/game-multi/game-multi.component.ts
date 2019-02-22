@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+
 import { AngularFireDatabase } from 'angularfire2/database';
+
 import { DataBaseService } from '../services/data-base.service';
 
 

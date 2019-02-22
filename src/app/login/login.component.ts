@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+
 import { UserService } from '../services/user.service';
 
 @Component({
@@ -7,17 +8,17 @@ import { UserService } from '../services/user.service';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
-  public blackJackData: Partial<TLocalData> = this._userService.getCurrentUser() || {};
-  public userName: string = this.blackJackData.userName;
+  public blackJackData: Partial<TPlayer> = this._userService.getCurrentUser() || {};
+  public userName: string = this.blackJackData.name;
 
   public constructor(private _userService: UserService) {}
 
   public saveUserName(name: string): void {
     const userId: number = new Date().getTime();
-    this.blackJackData.userName = name;
+    this.blackJackData.name = name;
 
-    if (!this.blackJackData.userId) {
-      this.blackJackData.userId = userId;
+    if (!this.blackJackData.id) {
+      this.blackJackData.id = userId;
     }
 
     this.userName = name;

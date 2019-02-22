@@ -1,16 +1,19 @@
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
+
 import { AngularFireDatabase } from 'angularfire2/database';
 import { Observable } from 'rxjs';
-import { Router } from '@angular/router';
+
 import { UserService } from './user.service';
 import { GameService } from './game.service';
 
 @Injectable()
 export class DataBaseService {
-  public constructor(public db: AngularFireDatabase,
-                     private router: Router,
-                     private _userService: UserService,
-                     private _gameService: GameService
+  public constructor(
+    public db: AngularFireDatabase,
+    private router: Router,
+    private _userService: UserService,
+    private _gameService: GameService
   ) {}
 
   public getRooms(): Observable<{}[]> {
@@ -47,6 +50,10 @@ export class DataBaseService {
 
   public updatePlayer(player: TPlayer, roomId: number): void {
     this.db.object('/rooms/room' + roomId + `/players/${player.id}`).update(player);
+  }
+
+  public updatePlayers(room: TRoom): void {
+    this.db.object('/rooms/room' + room.id + `/players`).update(room.players);
   }
 
   public updateDeck(deck: TCard[], roomId: number): void {
@@ -89,12 +96,13 @@ export class DataBaseService {
 
   public addRoom(roomName: string, maxPlayers: number, singleRoom: boolean): void {
     const roomId: number = new Date().getTime();
-    const blackJackData: TLocalData = this._userService.getCurrentUser() || this._userService.randomUserData;
+    const blackJackData: Partial<TPlayer> =
+      this._userService.getCurrentUser() || this._userService.randomUserData;
     this.db.object('/rooms/room' + roomId).update({
       name: roomName,
       maxPlayers: maxPlayers || 2,
       id: roomId,
-      masterId: blackJackData.userId,
+      masterId: blackJackData.id,
       players: {},
       gameInProgress: false,
       singleRoom

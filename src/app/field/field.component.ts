@@ -12,12 +12,16 @@ export class FieldComponent {
 
   @Input() public thisRoom: TRoom;
   @Input() public players: TPlayer[];
-  @Input() public blackJackData: TLocalData;
+  @Input() public blackJackData: Partial<TPlayer>;
 
   public constructor() {}
 
   public showGameProgress(): boolean {
     return this.thisRoom ? this.thisRoom.gameInProgress : false;
+  }
+
+  public showCardFace(player: TPlayer): boolean {
+    return !this.showGameProgress() || player.id === this.blackJackData.id;
   }
 }
 

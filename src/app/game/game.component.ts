@@ -1,11 +1,13 @@
-import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { Router } from '@angular/router';
+
 import { Subject } from 'rxjs';
 import { takeUntil, pluck, switchMap, tap, filter } from 'rxjs/operators';
-import { Router } from '@angular/router';
-import { UserService } from '../services/user.service';
+
 import { DataBaseService } from '../services/data-base.service';
 import { GameService } from '../services/game.service';
+import { UserService } from '../services/user.service';
 
 @Component({
   selector: 'app-game',
@@ -13,24 +15,22 @@ import { GameService } from '../services/game.service';
   styleUrls: ['./game.component.css']
 })
 export class GameComponent implements OnInit, OnDestroy {
-  public id: number;
   public thisRoom: TRoom;
-  public blackJackData: TLocalData =
-    this._userService.getCurrentUser() || this._userService.randomUserData;
-  public players: TPlayer[] = [];
+  public blackJackData: Partial<TPlayer>;
+  public players: TPlayer[];
   public isRoomAccessible: boolean = false;
-  public myIndex: number;
-  public topScores: {};
 
   private _destroy$$: Subject<void> = new Subject();
   private _myDeck: TCard[];
+  private _myIndex: number;
+  private _topScores: {};
 
   public constructor(
-    private route: ActivatedRoute,
+    private _route: ActivatedRoute,
     private _userService: UserService,
     private _dataBaseService: DataBaseService,
     private _gameService: GameService,
-    private router: Router
+    private _router: Router
   ) {}
   // @HostListener('window:beforeunload') doOnUnload(): void {
   //   alert('unload!');
@@ -45,57 +45,58 @@ export class GameComponent implements OnInit, OnDestroy {
       localStorage.setItem('blackJackData', stringblackJackData);
     }
 
-    this._dataBaseService.getTopScores()
+    this._dataBaseService
+      .getTopScores()
       .pipe(takeUntil(this._destroy$$))
       .subscribe((topScores: {}) => {
-        this.topScores = topScores || {};
+        this._topScores = topScores || {};
       });
 
-    this.route.params
+    this._route.params
       .pipe(
         pluck('id'),
         switchMap((roomId: number) => this._dataBaseService.getRoom(roomId)),
         tap((room: TRoom) => {
           if (!room) {
-            this.router.navigate(['closed-room']);
+            this._router.navigate(['closed-room']);
           } else {
             this.thisRoom = room;
             this.players = room.players ? Object.values(room.players) : [];
             this._myDeck = room.deck;
-            this.myIndex = this.players.findIndex(
-              (player: TPlayer) => player.id === this.blackJackData.userId
+            this._myIndex = this.players.findIndex(
+              (player: TPlayer) => player.id === this.blackJackData.id
             );
           }
         }),
         filter(Boolean),
         tap((room: TRoom) => {
           if (
-            this._gameService.checkInProgress(room, this.blackJackData.userId) ||
-            this._gameService.checkMaxPlayers(room, this.blackJackData.userId) ||
-            this._gameService.checkIfSingle(room, this.blackJackData.userId)
+            this._gameService.checkInProgress(room, this.blackJackData.id) ||
+            this._gameService.checkMaxPlayers(room, this.blackJackData.id) ||
+            this._gameService.checkIfSingle(room, this.blackJackData.id)
           ) {
-            this.router.navigate(['closed-room']);
+            this._router.navigate(['closed-room']);
           }
         }),
         filter(
           (room: TRoom) =>
-            !this._gameService.checkInProgress(room, this.blackJackData.userId) &&
-            !this._gameService.checkMaxPlayers(room, this.blackJackData.userId) &&
-            !this._gameService.checkIfSingle(room, this.blackJackData.userId)
+            !this._gameService.checkInProgress(room, this.blackJackData.id) &&
+            !this._gameService.checkMaxPlayers(room, this.blackJackData.id) &&
+            !this._gameService.checkIfSingle(room, this.blackJackData.id)
         ),
         tap(() => {
           this.isRoomAccessible = true;
         }),
         filter((room: TRoom) => {
-          return room.players ? !room.players[this.blackJackData.userId] : true;
+          return room.players ? !room.players[this.blackJackData.id] : true;
         }),
         takeUntil(this._destroy$$)
       )
       .subscribe((room: TRoom) => {
         const newPlayer: TPlayer = this._gameService.createPlayer(
-          this.blackJackData.userName,
+          this.blackJackData.name,
           false,
-          this.blackJackData.userId
+          this.blackJackData.id
         );
         this._dataBaseService.updatePlayer(newPlayer, this.thisRoom.id);
         if (room.singleRoom) {
@@ -107,22 +108,24 @@ export class GameComponent implements OnInit, OnDestroy {
   public ngOnDestroy(): void {
     this._destroy$$.next();
     this._findNewMaster(this.thisRoom);
-    this._dataBaseService.removePlayer(this.blackJackData.userId, this.thisRoom.id);
+    this._dataBaseService.removePlayer(this.blackJackData.id, this.thisRoom.id);
 
     if (
       this.thisRoom &&
-      this._gameService.checkForLastPlayer(this.players, this.blackJackData.userId)
+      this._gameService.checkForLastPlayer(this.players, this.blackJackData.id)
     ) {
       this._dataBaseService.deleteRoom(this.thisRoom.id);
     }
   }
 
   public startNewGame(): void {
+
     if (this.players.length <= 1) {
       alert(`At least 2 players should be in the room to start the game.
        Please wait for other players or add bots.`);
       return;
     }
+
     this._dataBaseService.changeInProgress(true, this.thisRoom.id);
     this._myDeck = this._gameService.shuffleDeck(this._gameService.createDeck());
     this._dataBaseService.updateDeck(this._myDeck, this.thisRoom.id);
@@ -134,68 +137,38 @@ export class GameComponent implements OnInit, OnDestroy {
       player.isMyTurn = false;
       player.ready = true;
     });
-
     this.players[0].isMyTurn = true;
 
-    if (this.blackJackData.userId === this.thisRoom.masterId) {
-      this.players.forEach((player: TPlayer) => {
-        this._takeNewCard(player);
-        this._dataBaseService.updatePlayer(player, this.thisRoom.id);
-      });
-    }
+    this.players.forEach((player: TPlayer) => {
+      this._takeNewCard(player);
+      this.thisRoom.players[player.id] = player;
+      this._dataBaseService.updatePlayers(this.thisRoom);
+    });
 
     this._dataBaseService.updateDeck(this._myDeck, this.thisRoom.id);
   }
 
   public stopGame(): void {
-    this.players[this.myIndex].isFinished = true;
+    this.players[this._myIndex].isFinished = true;
     this.continueGame();
   }
 
-  public switchTurn(thisIndex: number): number {
-    let nextIndex: number = this.findNextIndex(thisIndex);
-
-    if (!this.players.every((player: TPlayer) => player.isFinished)) {
-      while (this.players[nextIndex].isFinished === true || this.players[nextIndex].isBot) {
-        if (this.players[nextIndex].isBot) {
-          this.nextTurn(this.players[nextIndex]);
-        }
-        nextIndex = this.findNextIndex(nextIndex);
-        if (
-          nextIndex === thisIndex &&
-          !this.players.some((player: TPlayer) => player.isBot && !player.isFinished)
-        ) {
-          break;
-        }
-      }
-    }
-
-    this.players[thisIndex].isMyTurn = false;
-    this.players[nextIndex].isMyTurn = true;
-    return nextIndex;
-  }
-
   public continueGame(): void {
-    this.nextTurn(this.players[this.myIndex]);
+    this._nextTurn(this.players[this._myIndex]);
+    const nextIndex: number = this._switchTurn(this._myIndex);
 
-    const nextIndex: number = this.switchTurn(this.myIndex);
+    //   clearTimeout(this.turnTimer);
+    //   this.turnTimer = setTimeout(() => {this.players[nextIndex].isFinished = true;
+    //   const nextNextIndex: number = this._switchTurn(nextIndex);
+    //   this._dataBaseService.updatePlayer(this.players[nextIndex], this.thisRoom.id);
+    //   this._dataBaseService.updatePlayer(this.players[nextNextIndex], this.thisRoom.id);
+    //   }, 60000);
 
-  //   clearTimeout(this.turnTimer);
-  //   this.turnTimer = setTimeout(() => {this.players[nextIndex].isFinished = true;
-  //   const nextNextIndex: number = this.switchTurn(nextIndex);
-  //   this._dataBaseService.updatePlayer(this.players[nextIndex], this.thisRoom.id);
-  //   this._dataBaseService.updatePlayer(this.players[nextNextIndex], this.thisRoom.id);
-  //   }, 60000);
-
-    this._dataBaseService.updatePlayer(this.players[this.myIndex], this.thisRoom.id);
+    this._dataBaseService.updatePlayer(this.players[this._myIndex], this.thisRoom.id);
     this._dataBaseService.updatePlayer(this.players[nextIndex], this.thisRoom.id);
   }
 
-  public findNextIndex(myNumber: number): number {
-    return myNumber < this.players.length - 1 ? myNumber + 1 : 0;
-  }
-
-  public nextTurn(player: TPlayer): void {
+  private _nextTurn(player: TPlayer): void {
     if (player.isBot && player.score >= 15 && !player.isFinished) {
       player.isFinished = true;
     }
@@ -231,8 +204,8 @@ export class GameComponent implements OnInit, OnDestroy {
       });
 
       this._dataBaseService.changeInProgress(false, this.thisRoom.id);
-      this._dataBaseService.updateTopScores(this.players, this.topScores);
-      this._dataBaseService.updatePlayer(player, this.thisRoom.id);
+      this._dataBaseService.updateTopScores(this.players, this._topScores);
+      // this._dataBaseService.updatePlayer(player, this.thisRoom.id);
     }
   }
 
@@ -247,21 +220,46 @@ export class GameComponent implements OnInit, OnDestroy {
     return takenCard;
   }
 
+  private _switchTurn(thisIndex: number): number {
+    let nextIndex: number = this._findNextIndex(thisIndex);
+
+    if (!this.players.every((player: TPlayer) => player.isFinished)) {
+      while (this.players[nextIndex].isFinished === true || this.players[nextIndex].isBot) {
+        if (this.players[nextIndex].isBot) {
+          this._nextTurn(this.players[nextIndex]);
+        }
+        nextIndex = this._findNextIndex(nextIndex);
+        if (
+          nextIndex === thisIndex &&
+          !this.players.some((player: TPlayer) => player.isBot && !player.isFinished)
+        ) {
+          break;
+        }
+      }
+    }
+
+    this.players[thisIndex].isMyTurn = false;
+    this.players[nextIndex].isMyTurn = true;
+    return nextIndex;
+  }
+
   private _finishGame(winner: TPlayer): void {
     winner.isWinner = true;
     this.players.forEach((player: TPlayer) => {
       player.isFinished = true;
-      this._dataBaseService.updatePlayer(player, this.thisRoom.id);
+      this.thisRoom.players[player.id] = player;
+      // this._dataBaseService.updatePlayers(this.thisRoom);
     });
+    this._dataBaseService.updatePlayers(this.thisRoom);
   }
 
   private _findNewMaster(room: TRoom): void {
-    if (room.masterId === this.blackJackData.userId) {
-      let nextMasterIndex: number = this.findNextIndex(this.myIndex);
+    if (room.masterId === this.blackJackData.id) {
+      let nextMasterIndex: number = this._findNextIndex(this._myIndex);
 
       while (this.players[nextMasterIndex].isBot) {
-        nextMasterIndex = this.findNextIndex(nextMasterIndex);
-        if (nextMasterIndex === this.myIndex) {
+        nextMasterIndex = this._findNextIndex(nextMasterIndex);
+        if (nextMasterIndex === this._myIndex) {
           break;
         }
       }
@@ -269,5 +267,9 @@ export class GameComponent implements OnInit, OnDestroy {
       const nextMasterId: number = this.players[nextMasterIndex].id;
       this._dataBaseService.changeMaster(nextMasterId, this.thisRoom.id);
     }
+  }
+
+  private _findNextIndex(myNumber: number): number {
+    return myNumber < this.players.length - 1 ? myNumber + 1 : 0;
   }
 }

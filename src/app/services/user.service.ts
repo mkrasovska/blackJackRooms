@@ -2,21 +2,15 @@ import { Injectable } from '@angular/core';
 
 @Injectable()
 export class UserService {
-  public randomUserData: TLocalData = {
-    userName: this._randomNickHuman(),
-    userId: this.getRandom()
+  public randomUserData: Partial<TPlayer> = {
+    name: this._randomNickHuman(),
+    id: this._getRandom()
   };
-  public blackJackData: TLocalData = this.getCurrentUser() || this.randomUserData;
-  public roomId: number = 0;
 
   public constructor() {}
 
-  public getRandom(): number {
-    return new Date().getTime();
-  }
-
-  public getCurrentUser(): TLocalData {
-    const blackJackData: TLocalData = JSON.parse(localStorage.getItem('blackJackData'));
+  public getCurrentUser(): Partial<TPlayer> {
+    const blackJackData: Partial<TPlayer> = JSON.parse(localStorage.getItem('blackJackData'));
 
     return blackJackData;
   }
@@ -34,5 +28,9 @@ export class UserService {
     ];
     const randomName: string = nickNames[Math.ceil(Math.random() * nickNames.length)];
     return randomName;
+  }
+
+  private _getRandom(): number {
+    return new Date().getTime();
   }
 }

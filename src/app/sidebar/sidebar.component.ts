@@ -1,5 +1,6 @@
 import { Component, Input, EventEmitter, Output } from '@angular/core';
 import { Router } from '@angular/router';
+
 import { DataBaseService } from '../services/data-base.service';
 
 @Component({
@@ -11,16 +12,15 @@ import { DataBaseService } from '../services/data-base.service';
 export class SidebarComponent {
   @Input() public players: TPlayer[];
   @Input() public thisRoom: TRoom;
-  @Input() public blackJackData: TLocalData;
+  @Input() public blackJackData: Partial<TPlayer>;
 
   @Output()
   public gameStarted: EventEmitter<void> = new EventEmitter();
 
-
   public constructor(public router: Router, private _dataBaseService: DataBaseService) {}
 
   public showMasterControl(): boolean {
-    return this.thisRoom ? this.thisRoom.masterId === this.blackJackData.userId && !this.checkGameProgress() : false;
+    return this.thisRoom ? this.thisRoom.masterId === this.blackJackData.id && !this.checkGameProgress() : false;
   }
 
   public checkGameProgress(): boolean {
