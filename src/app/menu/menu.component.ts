@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { MyFirstServiceService } from './../services/my-first-service.service';
 import { Router } from '@angular/router';
+import { UserService } from '../services/user.service';
+import { DataBaseService } from '../services/data-base.service';
 
 @Component({
   selector: 'app-menu',
@@ -8,14 +9,16 @@ import { Router } from '@angular/router';
   styleUrls: ['./menu.component.css']
 })
 export class MenuComponent implements OnInit {
-
   public blackJackData: TLocalData;
   public editName: boolean = false;
 
-  public constructor(public _myService: MyFirstServiceService, public router: Router) {}
+  public constructor(
+    private _userService: UserService,
+    private _dataBaseService: DataBaseService,
+    public router: Router
+  ) {}
 
   public setNewName(event: KeyboardEvent): void {
-    // const stringblackJackData: string = JSON.stringify(this.blackJackData);
     if (event.key !== 'Enter') {
       return;
     }
@@ -24,10 +27,10 @@ export class MenuComponent implements OnInit {
   }
 
   public ngOnInit(): void {
-    this.blackJackData = this._myService.getMyData() || this._myService.randomUserData;
+    this.blackJackData = this._userService.getCurrentUser() || this._userService.randomUserData;
   }
 
   public addRoom(): void {
-    this._myService.addRoom('Single', 2, true);
+    this._dataBaseService.addRoom('Single', 2, true);
   }
 }

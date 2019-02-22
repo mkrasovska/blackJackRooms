@@ -1,6 +1,6 @@
 import { Component, Input, EventEmitter, Output } from '@angular/core';
-import { MyFirstServiceService } from './../services/my-first-service.service';
 import { Router } from '@angular/router';
+import { DataBaseService } from '../services/data-base.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -9,9 +9,7 @@ import { Router } from '@angular/router';
   host: { class: 'side-bar' }
 })
 export class SidebarComponent {
-  @Input() public allMessages: string[];
   @Input() public players: TPlayer[];
-  @Input() public gameInProgress: boolean;
   @Input() public thisRoom: TRoom;
   @Input() public blackJackData: TLocalData;
 
@@ -19,14 +17,22 @@ export class SidebarComponent {
   public gameStarted: EventEmitter<void> = new EventEmitter();
 
 
-  public constructor(private _myService: MyFirstServiceService, public router: Router) {}
+  public constructor(public router: Router, private _dataBaseService: DataBaseService) {}
+
+  public showMasterControl(): boolean {
+    return this.thisRoom ? this.thisRoom.masterId === this.blackJackData.userId && !this.checkGameProgress() : false;
+  }
+
+  public checkGameProgress(): boolean {
+    return this.thisRoom ? this.thisRoom.gameInProgress : false;
+  }
 
   public addBot(): void {
     if (this.players.length >= this.thisRoom.maxPlayers) {
       alert(`Maximum allowed number of players in this room is ${this.thisRoom.maxPlayers}`);
       return;
     } else {
-      this._myService.addBot();
+      this._dataBaseService.addBot(this.thisRoom.id);
     }
   }
 
@@ -36,7 +42,7 @@ export class SidebarComponent {
       return;
     } else {
     this.thisRoom.maxPlayers++;
-    this._myService.changeMaxPlayers(this.thisRoom.maxPlayers, this.thisRoom.id);
+    this._dataBaseService.changeMaxPlayers(this.thisRoom.maxPlayers, this.thisRoom.id);
     }
   }
 
@@ -46,7 +52,7 @@ export class SidebarComponent {
       return;
     } else {
       this.thisRoom.maxPlayers--;
-      this._myService.changeMaxPlayers(this.thisRoom.maxPlayers, this.thisRoom.id);
+      this._dataBaseService.changeMaxPlayers(this.thisRoom.maxPlayers, this.thisRoom.id);
     }
   }
 
@@ -59,6 +65,6 @@ export class SidebarComponent {
       return;
     }
     const deletedBot: TPlayer = this.players.pop();
-   this._myService.removePlayer(deletedBot.id, this.thisRoom.id);
+   this._dataBaseService.removePlayer(deletedBot.id, this.thisRoom.id);
   }
 }

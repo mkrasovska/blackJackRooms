@@ -24,7 +24,7 @@ type TRoom = {
   id: number,
   counter: number,
   players: TPlayer[],
-  deck: TCard[],
+  deck?: TCard[],
   messages: string[]
   gameInProgress: boolean,
   maxPlayers: number,

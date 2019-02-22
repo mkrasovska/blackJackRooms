@@ -1,16 +1,16 @@
 <section class="game-field">
   <div class="decision-buttons">
     <button class="menu-button"
-     *ngIf="gameInProgress"
+     *ngIf="showGameProgress()"
      (click)="cardTaken.emit()"
-     [disabled]="!isActive || !isMyTurn">
+     [disabled]="!thisRoom.players[this.blackJackData.userId].isMyTurn">
       Pick a card
     </button>
 
     <button class="menu-button"
-     *ngIf="gameInProgress"
+     *ngIf="showGameProgress()"
      (click)="gameStopped.emit()"
-     [disabled]="!isActive || !isMyTurn ">
+     [disabled]="!thisRoom.players[this.blackJackData.userId].isMyTurn ">
       Stop
     </button>
   </div>
@@ -21,11 +21,11 @@
       <div class="player-hand">
         <div class="cards">
           <img *ngFor="let card of player.cards"
-          [src]="!gameInProgress ? card.face : player.id === blackJackData.userId ? card.face : card.back" />
+          [src]="!showGameProgress() ? card.face : player.id === blackJackData.userId ? card.face : card.back" />
         </div>
 
         <img class="turn-arrow"
-            *ngIf="player.isMyTurn && gameInProgress"
+            *ngIf="player.isMyTurn && showGameProgress()"
             src="../../../assets/img/arrow-31182_960_720.png" />
       </div>
   </div>

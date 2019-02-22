@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { MyFirstServiceService } from './../services/my-first-service.service';
 import { AngularFireDatabase } from 'angularfire2/database';
+import { DataBaseService } from '../services/data-base.service';
 
 
 @Component({
@@ -17,8 +17,8 @@ export class GameMultiComponent implements OnInit {
   public searchQuery: string;
 
   public constructor(
-    private _myService: MyFirstServiceService,
     public db: AngularFireDatabase,
+    private _dataBaseService: DataBaseService
   ) {}
 
   public isClosed(room: TRoom): boolean {
@@ -30,12 +30,12 @@ export class GameMultiComponent implements OnInit {
       alert('The number of players should be a an integer from 1 to 6');
       return;
     } else {
-    this._myService.addRoom(roomName, maxPlayers, false);
+      this._dataBaseService.addRoom(roomName, maxPlayers, false);
     }
   }
 
   public deleteRoom(roomId: number): void {
-    this.db.list('/rooms').remove('room' + roomId);
+    this._dataBaseService.deleteRoom(roomId);
   }
 
   public searchByQuery(searchQuery: string): void {
@@ -57,7 +57,7 @@ export class GameMultiComponent implements OnInit {
   }
 
   public ngOnInit(): void {
-    this._myService.getRoomData().subscribe((rooms: TRoom[]) => {
+    this._dataBaseService.getRooms().subscribe((rooms: TRoom[]) => {
       this.rooms = rooms;
       this.roomsFiltered = rooms;
       this.rooms.forEach((myroom: TRoom) => {

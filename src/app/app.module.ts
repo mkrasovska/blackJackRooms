@@ -8,20 +8,19 @@ import { FormsModule } from '@angular/forms';
 
 
 import { appRoutes } from './routes';
-import { MyFirstServiceService } from './services/my-first-service.service';
+import { DataBaseService } from './services/data-base.service';
+import { UserService } from './services/user.service';
+import { GameService } from './services/game.service';
 
 import { AppComponent } from './app.component';
-// import { GameComponent } from './game/game.component';
 import { MenuComponent } from './menu/menu.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { FieldComponent } from './field/field.component';
 import { NotFoundPageComponent } from './not-found-page/not-found-page.component';
 import { GameMultiComponent } from './game-multi/game-multi.component';
 import { LoginComponent } from './login/login.component';
-import { PlayroomComponent } from './playroom/playroom.component';
-import { MultiplayerComponent } from './multiplayer/multiplayer.component';
+import { GameComponent } from './game/game.component';
 import { LoginGuard } from './guards/login.guard';
-// import { RoomGuardGuard } from './guards/room-guard.guard';
 import { ClosedRoomComponent } from './closed-room/closed-room.component';
 import { RecordsComponent } from './records/records.component';
 
@@ -29,15 +28,13 @@ import { RecordsComponent } from './records/records.component';
 @NgModule({
   declarations: [
     AppComponent,
-    // GameComponent,
     MenuComponent,
     SidebarComponent,
     FieldComponent,
     NotFoundPageComponent,
     GameMultiComponent,
     LoginComponent,
-    PlayroomComponent,
-    MultiplayerComponent,
+    GameComponent,
     ClosedRoomComponent,
     RecordsComponent
   ],
@@ -48,7 +45,7 @@ import { RecordsComponent } from './records/records.component';
     AngularFireDatabaseModule,
     FormsModule
   ],
-  providers: [MyFirstServiceService, LoginGuard],
+  providers: [GameService, UserService, DataBaseService, LoginGuard],
   bootstrap: [AppComponent]
 })
 export class AppModule {}

@@ -1,8 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { MyFirstServiceService } from '../services/my-first-service.service';
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { Router } from '@angular/router';
+import { DataBaseService } from '../services/data-base.service';
 
 @Component({
   selector: 'app-records',
@@ -10,17 +10,15 @@ import { Router } from '@angular/router';
   styleUrls: ['./records.component.css']
 })
 export class RecordsComponent implements OnInit, OnDestroy {
-  // public records: {} = {};
   public records: TRecord[] = [];
 
 
   private _destroy$$: Subject<void> = new Subject();
 
-  public constructor(private _myService: MyFirstServiceService, public router: Router) {}
+  public constructor(public router: Router, private _dataBaseService: DataBaseService) {}
 
   public ngOnInit(): void {
-    this._myService
-      .getRecords()
+    this._dataBaseService.getTopScores()
       .pipe(takeUntil(this._destroy$$))
       .subscribe((records: {}) => {
         this.records = records ? Object.values(records) : [];

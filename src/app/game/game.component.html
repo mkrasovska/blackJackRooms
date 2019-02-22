@@ -1,0 +1,26 @@
+
+<div class="main-container">
+  <div *ngIf="!isRoomAccessible"
+    class="spinner">
+    <img src="../../assets/img/spinner.gif">
+  </div>
+
+  <div *ngIf=isRoomAccessible>
+    <div class="main-container-game">
+      <app-sidebar [thisRoom]="thisRoom"
+        [players]="players"
+        [blackJackData]="blackJackData"
+        (gameStarted)="startNewGame()">
+      </app-sidebar>
+
+      <app-field (cardTaken)="continueGame()"
+        [blackJackData]="blackJackData"
+        [thisRoom]="thisRoom"
+        [players]="players"
+        (gameStopped)="stopGame()">
+      </app-field>
+    </div>
+  </div>
+</div>
+
+

@@ -4,12 +4,12 @@
     Menu
   </button>
 
-  <p *ngIf="!gameInProgress">
+  <p *ngIf="!checkGameProgress()">
     Players: {{players ? players.length : 0}} of {{thisRoom ? thisRoom.maxPlayers : 0}}
   </p>
 
   <div class="master-comtrols"
-      *ngIf="thisRoom ? thisRoom.masterId === blackJackData.userId && !gameInProgress : false">
+      *ngIf="showMasterControl()">
 
     <button class="menu-button"
       (click)="increaseRoom()">
@@ -22,13 +22,11 @@
     </button>
 
     <button class="menu-button"
-      *ngIf="thisRoom ? thisRoom.masterId === blackJackData.userId && !gameInProgress : false"
       (click)="addBot()">
       Add bot
     </button>
 
     <button class="menu-button"
-      *ngIf="thisRoom ? thisRoom.masterId === blackJackData.userId && !gameInProgress : false"
       (click)="deleteBot()">
       Delete bot
     </button>
@@ -39,31 +37,25 @@
     </button>
   </div>
 
-  <div class="game-log">
-    <p *ngFor="let message of allMessages">
-      {{ message }}
-    </p>
-  </div>
-
   <div class="game-score">
 
     <h2>
-      <span *ngIf="!gameInProgress">Game score:</span>
-      <span *ngIf="gameInProgress">Players:</span>
+      <span *ngIf="!checkGameProgress()">Game score:</span>
+      <span *ngIf="checkGameProgress()">Players:</span>
     </h2>
 
     <p *ngFor="let player of players"
       class="player-list"
-      [class.player-name]="player.isMyTurn && gameInProgress"
+      [class.player-name]="player.isMyTurn && checkGameProgress()"
       [class.master]="thisRoom ? thisRoom.masterId === player.id : false"
       [class.is-human]="!player.isBot"
       [class.is-bot]="player.isBot">
       {{player.name}}
-      <span *ngIf="!gameInProgress">
+      <span *ngIf="!checkGameProgress()">
         : {{player.score}}
       </span>
 
-      <span *ngIf="player.isFinished && gameInProgress && !(player.score > 21)">
+      <span *ngIf="player.isFinished && checkGameProgress() && !(player.score > 21)">
         <img  src="../../../assets/img/stop.png">
       </span>
 
