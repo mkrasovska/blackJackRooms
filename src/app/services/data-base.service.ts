@@ -16,8 +16,8 @@ export class DataBaseService {
     private _gameService: GameService
   ) {}
 
-  public getRooms(): Observable<{}[]> {
-    return this.db.list('rooms').valueChanges();
+  public getRooms(): Observable<TRoom[]> {
+    return this.db.list<TRoom>('rooms').valueChanges();
   }
 
   public deleteRoom(roomId: number): void {
@@ -28,8 +28,8 @@ export class DataBaseService {
     return this.db.object('records').valueChanges();
   }
 
-  public getRoom(id: number): Observable<{}> {
-    return this.db.object('rooms/room' + id).valueChanges();
+  public getRoom(id: number): Observable<TRoom> {
+    return this.db.object<TRoom>('rooms/room' + id).valueChanges();
   }
 
   public removePlayer(playerId: number, roomId: number): void {
