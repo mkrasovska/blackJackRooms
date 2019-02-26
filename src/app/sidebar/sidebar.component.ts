@@ -2,6 +2,7 @@ import { Component, Input, EventEmitter, Output } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { DataBaseService } from '../services/data-base.service';
+import { PlayerIndex } from '@angular/core/src/render3/interfaces/player';
 
 @Component({
   selector: 'app-sidebar',
@@ -28,12 +29,24 @@ export class SidebarComponent {
   }
 
   public addBot(): void {
+    this._resetPlayers();
+
     if (this.players.length >= this.thisRoom.maxPlayers) {
       alert(`Maximum allowed number of players in this room is ${this.thisRoom.maxPlayers}`);
       return;
     } else {
       this._dataBaseService.addBot(this.thisRoom.id);
     }
+  }
+
+  private _resetPlayers(): void {
+    this.players.forEach((player: TPlayer) => {
+    player.score = 0;
+    player.cards = [];
+    player.isWinner = false;
+    this.thisRoom[player.id] = player;
+    });
+    this._dataBaseService.updatePlayers(this.thisRoom);
   }
 
   public increaseRoom(): void {
@@ -57,6 +70,8 @@ export class SidebarComponent {
   }
 
   public deleteBot(): void {
+    this._resetPlayers();
+
     if (!this.players[this.players.length - 1].isBot) {
       return;
     }

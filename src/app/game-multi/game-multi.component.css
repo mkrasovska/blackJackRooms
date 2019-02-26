@@ -42,27 +42,30 @@
 .add-room-controls {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  width: 500px
+  align-items: flex-start;
+  font-weight: bold;
+  color: white;
+  margin-right: 500px;
 }
 
 .search-room-controls {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  width: 500px
+  align-items: flex-start;
+  font-weight: bold;
+  color: white;
 }
 
 .room-controls {
   display: flex;
   flex-direction: row;
-  justify-content: space-around;
+  justify-content: space-between;
 }
 
 .add-room-controls input,
 .search-room-controls input {
   width: 150px;
-  margin-bottom: 10px;
+  margin-top: 10px;
   padding: 5px;
   font-size: 14px;
 }
@@ -77,12 +80,12 @@
   height: 100%;
   background-image: url(../../assets/img/doors.jpg);
   background-repeat: no-repeat;
-  background-size: 100%;
+  background-size: cover;
 }
-
+/*
 .number-of-players {
   width: 90px;
-}
+} */
 
 .hidden {
   display: none;
@@ -98,3 +101,26 @@
 .closed-room {
   background-color: red;
 }
+
+input.ng-invalid.ng-touched  {
+  border: 2px solid red;
+}
+
+.invalid-room-name,
+.invalid-max-players {
+  color: red;
+}
+
+.valid-room-name,
+.valid-max-players {
+  color: green;
+}
+
+.valid-room-name img,
+.valid-max-players img {
+ width: 20px;
+}
+
+
+
+

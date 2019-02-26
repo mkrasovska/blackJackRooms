@@ -1,26 +1,57 @@
 <div class="main-container">
   <div class="room-controls">
-    <div class=add-room-controls>
-      <input #roomName placeholder="room name">
+    <form class=add-room-controls
+      (ngSubmit)="addRoom(form)"
+      #form="ngForm">
+      <input #roomName="ngModel"
+        placeholder="room name"
+        required
+        ngModel
+        name="roomName">
 
-      <input #maxPlayers
+      <div [class.invalid-room-name]="roomName.touched && roomName.invalid">
+        Room name
+        <span *ngIf="!roomName.invalid && roomName.touched"
+          class="valid-room-name">
+          <img src="../../assets/img/check-mark.png">
+        </span>
+      </div>
+
+      <input #maxPlayers="ngModel"
         type=number
         class=number-of-players
-        placeholder="max players">
+        [ngModel]="defaultMaxPlayers"
+        name="maxPlayers"
+        required
+        min="1"
+        max="6"
+        step="1"
+        onKeyDown="return false">
+
+      <div [class.invalid-max-players]="maxPlayers.touched && maxPlayers.invalid">
+        Max. players (1 to 6)
+        <span *ngIf="!maxPlayers.invalid && maxPlayers.touched"
+          class="valid-max-players">
+          <img src="../../assets/img/check-mark.png">
+        </span>
+      </div>
 
       <button type="submit"
         class="menu-button"
-        (click)=addRoom(roomName.value,+maxPlayers.value)>
+        [disabled]="!form.valid"
+        >
         New room
       </button>
-    </div>
+    </form>
 
     <div class=search-room-controls>
-      <div>Enter room or player name/ID</div>
-
       <input [(ngModel)]="searchQuery"
         (keyup)="searchByQuery(searchQuery)"
         placeholder="Enter query">
+
+      <div>
+        Search by room or player name/ID
+      </div>
     </div>
   </div>
 

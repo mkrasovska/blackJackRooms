@@ -17,7 +17,10 @@
 
   <div *ngFor="let player of players"
     class="player-field">
-    <div *ngIf="player.cards" class="player-name">{{ player.name }} </div>
+    <div *ngIf="player.cards ? player.cards.length > 0 : false"
+      class="player-name">
+      {{ player.name }}
+    </div>
       <div class="player-hand">
         <div class="cards">
           <img *ngFor="let card of player.cards"
