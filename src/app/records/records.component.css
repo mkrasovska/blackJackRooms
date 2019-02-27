@@ -30,7 +30,7 @@ main {
   color: white;
   background-image: url(../../assets/img/hall-of-fame.jpg);
   background-repeat: no-repeat;
-  background-size: 100%;
+  background-size: 1920px;
   background: cover;
   min-width: 100%;
   min-height: 100%;

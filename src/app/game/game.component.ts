@@ -20,11 +20,12 @@ export class GameComponent implements OnInit, OnDestroy {
   public players: TPlayer[];
   public isRoomAccessible: boolean = false;
 
+
   private _destroy$$: Subject<void> = new Subject();
   private _myDeck: TCard[];
   private _myIndex: number;
   private _topScores: {};
-  private _turnTimer;
+  private _turnTimer: number;
 
   public constructor(
     private _route: ActivatedRoute,
@@ -33,9 +34,35 @@ export class GameComponent implements OnInit, OnDestroy {
     private _gameService: GameService,
     private _router: Router
   ) {}
-  // @HostListener('window:beforeunload') doOnUnload(): void {
-  //  console.log('unload!');
-  // }
+
+  @HostListener('window:beforeunload', ['$event'])
+  public onBeforeClose(e: Event): boolean {
+    e.returnValue = false;
+    return false;
+  }
+
+  @HostListener('window:unload', ['$event'])
+  public onUnload(e: Event): boolean {
+
+    if (this.players[this._myIndex].isMyTurn) {
+      const nextIndex: number = this._switchTurn();
+      this.updateTurn(this._myIndex, nextIndex);
+      clearTimeout(this._turnTimer);
+      this._turnTimer = 0;
+    }
+
+    this._findNewMaster(this.thisRoom);
+    this._dataBaseService.removePlayer(this.blackJackData.id, this.thisRoom.id);
+
+    if (
+      this.thisRoom &&
+      this._gameService.checkForLastPlayer(this.players, this.blackJackData.id)
+    ) {
+      this._dataBaseService.deleteRoom(this.thisRoom.id);
+    }
+
+    return false;
+  }
 
   public ngOnInit(): void {
     if (this._userService.getCurrentUser()) {
@@ -67,13 +94,12 @@ export class GameComponent implements OnInit, OnDestroy {
             this._myIndex = this.players.findIndex(
               (player: TPlayer) => player.id === this.blackJackData.id
             );
-            // if (this.thisRoom.gameInProgress && this.players[this._myIndex].isMyTurn) {
-            //   this._turnTimer = setTimeout(() => {
-            //     this.players[this._myIndex].isFinished = true;
-            //     this.continueGame();
-            //   }, 10000);
-            //   console.log(this._turnTimer);
-            // }
+            if (this.thisRoom.gameInProgress && this.players[this._myIndex].isMyTurn && !this._turnTimer && !this.players[this._myIndex].isFinished) {
+                this._turnTimer = setTimeout(() => {
+                this.players[this._myIndex].isFinished = true;
+                this.continueGame();
+              }, 10000);
+            }
           }
         }),
         filter(Boolean),
@@ -119,6 +145,8 @@ export class GameComponent implements OnInit, OnDestroy {
     if (this.players[this._myIndex].isMyTurn) {
       const nextIndex: number = this._switchTurn();
       this.updateTurn(this._myIndex, nextIndex);
+      clearTimeout(this._turnTimer);
+      this._turnTimer = 0;
     }
 
     this._findNewMaster(this.thisRoom);
@@ -169,15 +197,11 @@ export class GameComponent implements OnInit, OnDestroy {
   }
 
   public continueGame(): void {
+    clearTimeout(this._turnTimer);
+    this._turnTimer = 0;
     this._nextTurn(this.players[this._myIndex]);
     const nextIndex: number = this._switchTurn();
-    console.log(`Now I will clear ${this._turnTimer}`);
-    clearTimeout(this._turnTimer);
     this.updateTurn(this._myIndex, nextIndex);
-    // this.players[this._myIndex].isMyTurn = false;
-    // this.players[nextIndex].isMyTurn = true;
-    // this._dataBaseService.updatePlayer(this.players[this._myIndex], this.thisRoom.id);
-    // this._dataBaseService.updatePlayer(this.players[nextIndex], this.thisRoom.id);
   }
 
   private updateTurn(thisIndex: number, nextIndex: number): void {
@@ -216,7 +240,6 @@ export class GameComponent implements OnInit, OnDestroy {
 
     if (this.players.every((_player: TPlayer) => _player.isFinished)) {
       const winners: TPlayer[] = this._gameService.evaluateWinner(this.players);
-      clearTimeout(this._turnTimer);
       winners.forEach((winner: TPlayer) => {
         winner.isWinner = true;
         this._dataBaseService.updatePlayer(winner, this.thisRoom.id);
